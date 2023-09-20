@@ -120,6 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5cff4ecf5e86141980faad55ba75efe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BrickDeathEffect: {fileID: 914928334987096343, guid: 339174a8cbe9af920bb6b003c0f9eb28, type: 3}
 --- !u!61 &817232456463611173
 BoxCollider2D:
   m_ObjectHideFlags: 0

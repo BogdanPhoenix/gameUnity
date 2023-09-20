@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 public class Bomb : MonoBehaviour
 {
     private float Counter;
-    private int FireLenght;
+    private int FireLength;
     
     private List<Vector2> CellsToBlowL;
     private List<Vector2> CellsToBlowR;
@@ -80,7 +80,6 @@ public class Bomb : MonoBehaviour
             }
         }
         
-        Debug.Log(CellsToBlowU.Count);
         //U
         for (int i = 0; i < CellsToBlowU.Count; ++i)
         {
@@ -111,11 +110,11 @@ public class Bomb : MonoBehaviour
 
     private void CalculateFire()
     {
-        FireLenght = FindObjectOfType<BomberMan>().GetFireLength();
+        FireLength = FindObjectOfType<BomberMan>().GetFireLength();
         CellsToBlowL.Clear();
         
-        //L
-        for (int i = 1; i <= FireLenght; i++)
+        // L
+        for (int i = 1; i <= FireLength; i++)
         {
             if (Physics2D.OverlapCircle(new Vector2(transform.position.x - i, transform.position.y), 0.1f, StoneLayer))
             {
@@ -128,11 +127,8 @@ public class Bomb : MonoBehaviour
             }
             CellsToBlowL.Add(new Vector2(transform.position.x - i, transform.position.y));
         }
-        
-        CellsToBlowR.Clear();
-        
-        //R
-        for (int i = 1; i <= FireLenght; i++)
+        // R
+        for (int i = 1; i <= FireLength; i++)
         {
             if (Physics2D.OverlapCircle(new Vector2(transform.position.x + i, transform.position.y), 0.1f, StoneLayer))
             {
@@ -145,41 +141,22 @@ public class Bomb : MonoBehaviour
             }
             CellsToBlowR.Add(new Vector2(transform.position.x + i, transform.position.y));
         }
-        
-        CellsToBlowU.Clear();
-        
-        //U
-        for (int i = 1; i <= FireLenght; i++)
+        // U
+        for (int i = 1; i <= FireLength; i++)
         {
-            // if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y + i), 0.1f, StoneLayer))
-            // {
-            //     break;
-            // }
-            // if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y + i), 0.1f, BrickLayer))
-            // {
-            //     CellsToBlowU.Add(new Vector2(transform.position.x, transform.position.y + i));
-            //     break;
-            // }
-            // CellsToBlowU.Add(new Vector2(transform.position.x, transform.position.y + i));
-            if (Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y),
-                    new Vector2(transform.position.x, transform.position.y + i), StoneLayer))
+            if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y + i), 0.1f, StoneLayer))
             {
                 break;
             }
-
-            if (Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y),
-                    new Vector2(transform.position.x, transform.position.y + i), BrickLayer))
+            if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y + i), 0.1f, BrickLayer))
             {
                 CellsToBlowU.Add(new Vector2(transform.position.x, transform.position.y + i));
                 break;
             }
             CellsToBlowU.Add(new Vector2(transform.position.x, transform.position.y + i));
         }
-        
-        CellsToBlowD.Clear();
-        
-        //U
-        for (int i = 1; i <= FireLenght; i++)
+        // D
+        for (int i = 1; i <= FireLength; i++)
         {
             if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y - i), 0.1f, StoneLayer))
             {
