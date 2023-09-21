@@ -10,8 +10,9 @@ public class BomberMan : MonoBehaviour
     private bool ButtonDetonate;
     private bool CanMove;
     private bool InsideBomb;
+    private bool InsideFire;
     
-    private int BomsAllowed;
+    private int BombsAllowed;
     private int FireLenght;
     
     public int Direction;
@@ -21,13 +22,14 @@ public class BomberMan : MonoBehaviour
     public LayerMask StoneLayer;
     public LayerMask BombLayer;
     public LayerMask BrickLayer;
+    public LayerMask FireLayer;
     public float MoveSpeed = 2;
     public GameObject Bomb;
     
     // Start is called before the first frame update
     void Start()
     {
-        BomsAllowed = 2;
+        BombsAllowed = 2;
         FireLenght = 5;
     }
 
@@ -35,7 +37,7 @@ public class BomberMan : MonoBehaviour
     {
         GetInput();
         GetDirection();
-        HandleSensore();
+        HandleSensor();
         HandleBombs();
         Move();
     }
@@ -79,10 +81,11 @@ public class BomberMan : MonoBehaviour
         }
     }
 
-    void HandleSensore()
+    void HandleSensor()
     {
         Sensor.transform.localPosition = new Vector2(0, 0);
         InsideBomb = Physics2D.OverlapBox(Sensor.position, new Vector2(SensorSize, SensorSize), 0, BombLayer);
+        InsideFire = Physics2D.OverlapBox(Sensor.position, new Vector2(SensorSize, SensorSize), 0, FireLayer);
         switch (Direction)
         {
             case 8:
@@ -114,7 +117,7 @@ public class BomberMan : MonoBehaviour
 
     private void HandleBombs()
     {
-        if (ButtonBomb && GameObject.FindGameObjectsWithTag("Bomb").Length < BomsAllowed)
+        if (ButtonBomb && GameObject.FindGameObjectsWithTag("Bomb").Length < BombsAllowed && !InsideBomb && !InsideFire)
         {
             Instantiate(Bomb, new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y)), transform.rotation);
         }
@@ -143,7 +146,7 @@ public class BomberMan : MonoBehaviour
     
     public void AddBomb()
     {
-        ++BomsAllowed;
+        ++BombsAllowed;
     }
 
     public void AddFire()

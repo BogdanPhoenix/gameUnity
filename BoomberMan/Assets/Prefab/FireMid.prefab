@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 5928503547531325454}
   - component: {fileID: 6099865672706252829}
   - component: {fileID: 2833833594168239943}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: FireMid
-  m_TagString: Untagged
+  m_TagString: Fire
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
