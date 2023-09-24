@@ -2,6 +2,7 @@ namespace Enum
 {
     public enum PowerUpType
     {
+        NONE,
         EXTRA_BOMB,
         FIRE,
         SPEED,

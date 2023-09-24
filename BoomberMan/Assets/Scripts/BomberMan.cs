@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Enum;
 using UnityEngine;
 
 public class BomberMan : MonoBehaviour
@@ -70,34 +71,27 @@ public class BomberMan : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.gameObject.CompareTag("PowerUp")) return;
-        switch(other.GetComponent<PowerUp>().Type)
+        switch(other.GetComponent<PowerUp>().type)
         {
-            // 0 - extra bomb
-            // 1 - fire
-            // 2 - speed
-            // 3 - noclip wall
-            // 4 - noclip fire
-            // 5 - noclip bomb
-            // 6 - detonator
-            case 0:
+            case PowerUpType.EXTRA_BOMB:
                 GetExtraBomb();
                 break;
-            case 1:
+            case PowerUpType.FIRE:
                 GetExtraFire();
                 break;
-            case 2:
+            case PowerUpType.SPEED:
                 GetExtraSpeed();
                 break;
-            case 3:
+            case PowerUpType.NOCLIP_WALL:
                 GetNoclipWalls();
                 break;
-            case 4:
+            case PowerUpType.NOCLIP_FIRE:
                 GetNoclipFire();
                 break;
-            case 5:
+            case PowerUpType.NOCLIP_BOMB:
                 GetNoclipBombs();
                 break;
-            case 6:
+            case PowerUpType.DETONATOR:
                 GetDetonator();
                 break;
         }

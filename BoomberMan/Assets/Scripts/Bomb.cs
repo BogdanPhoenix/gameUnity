@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Bomb : MonoBehaviour
@@ -29,13 +28,19 @@ public class Bomb : MonoBehaviour
     private int FireLength;
 
     private BomberMan bomberman;
-
-    // Start is called before the first frame update
-    void Start()
+    
+    private static class SidesFireDirection
+    {
+        public static readonly Vector2 Left = new Vector2(-1, 0);
+        public static readonly Vector2 Right = new Vector2(1, 0);
+        public static readonly Vector2 Up = new Vector2(0, 1);
+        public static readonly Vector2 Down = new Vector2(0, -1);
+    }
+    
+    private void Start()
     {
         bomberman = FindObjectOfType<BomberMan>();
-        if (!bomberman.CheckDetonator()) canTick = true;
-        else canTick = false;
+        canTick = !bomberman.CheckDetonator();
         calculated = false;
         Counter = Delay;
         CellsToBlowR = new List<Vector2>();
@@ -44,151 +49,87 @@ public class Bomb : MonoBehaviour
         CellsToBlowD = new List<Vector2>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (Counter > 0)
+        if (Counter <= 0)
         {
-            if(canTick)Counter -= Time.deltaTime;
-        } 
-        else
+            Blow();
+        }
+        else if (canTick)
         {
-            Blow();            
+            Counter -= Time.deltaTime;
         }
     }
 
-    void OnCollisionEnter2D(Collision2D other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.tag == "Fire")
+        if (other.gameObject.CompareTag("Fire"))
         {
             Blow();
         }
     }
 
+    /*
+     * Метод для побудови вогню від бомби
+     */
     public void Blow()
     {
-        
         CalculateFireDirections();
         Instantiate(FireMid, transform.position, transform.rotation);
-        //L
-        if (CellsToBlowL.Count > 0)
-            for (int i = 0; i < CellsToBlowL.Count; i++)
-            {
-                if (i == CellsToBlowL.Count - 1) Instantiate(FireLeft, CellsToBlowL[i], transform.rotation);
-                else Instantiate(FireHorizontal, CellsToBlowL[i], transform.rotation);
-            }
-        //R
-        if (CellsToBlowR.Count > 0)
-            for (int i = 0; i < CellsToBlowR.Count; i++)
-            {
-                if (i == CellsToBlowR.Count - 1) Instantiate(FireRight, CellsToBlowR[i], transform.rotation);
-                else Instantiate(FireHorizontal, CellsToBlowR[i], transform.rotation);
-            }
-        //U
-        if (CellsToBlowU.Count > 0)
-            for (int i = 0; i < CellsToBlowU.Count; i++)
-            {
-                if (i == CellsToBlowU.Count - 1) Instantiate(FireTop, CellsToBlowU[i], transform.rotation);
-                else Instantiate(FireVertical, CellsToBlowU[i], transform.rotation);
-            }
-        //D
-        if (CellsToBlowD.Count > 0)
-            for (int i = 0; i < CellsToBlowD.Count; i++)
-            {
-                if (i == CellsToBlowD.Count - 1) Instantiate(FireBottom, CellsToBlowD[i], transform.rotation);
-                else Instantiate(FireVertical, CellsToBlowD[i], transform.rotation);
-            }
+        
+        DefiningImpactPrefabs(CellsToBlowL, FireHorizontal, FireLeft);
+        DefiningImpactPrefabs(CellsToBlowR, FireHorizontal, FireRight);
+        DefiningImpactPrefabs(CellsToBlowU, FireVertical, FireTop);
+        DefiningImpactPrefabs(CellsToBlowD, FireVertical, FireBottom);
 
         Destroy(gameObject);
-
-
     }
 
-    void CalculateFireDirections()
+    /*
+     * Визначення префабів вогню в одному із напрямків.
+     */
+    private void DefiningImpactPrefabs(IReadOnlyList<Vector2> listBlow, GameObject mainFire, GameObject ultimateFire)
+    {
+        if (listBlow.Count <= 0) return;
+        
+        for (var i = 0; i < listBlow.Count; i++)
+        {
+            Instantiate(i == listBlow.Count - 1 ? ultimateFire : mainFire, listBlow[i], transform.rotation);
+        }
+    }
+
+    /*
+     * Метод для визначення напрямків вогню від бомби
+     */
+    private void CalculateFireDirections()
     {
         if (calculated) return;
+        
         FireLength = bomberman.GetFireLength();
-        // L
-        for (int i = 1; i <= FireLength; i++)
-        {
-            if (Physics2D.OverlapCircle(new Vector2(transform.position.x - i, transform.position.y), 0.1f, StoneLayer))
-            {
-                break;
-            }
-            if (Physics2D.OverlapCircle(new Vector2(transform.position.x - i, transform.position.y), 0.1f, BlowableLayer))
-            {
-                CellsToBlowL.Add(new Vector2(transform.position.x - i, transform.position.y));
-                break;
-            }
-            CellsToBlowL.Add(new Vector2(transform.position.x - i, transform.position.y));
-        }
-        // R
-        for (int i = 1; i <= FireLength; i++)
-        {
-            if (Physics2D.OverlapCircle(new Vector2(transform.position.x + i, transform.position.y), 0.1f, StoneLayer))
-            {
-                break;
-            }
-            if (Physics2D.OverlapCircle(new Vector2(transform.position.x + i, transform.position.y), 0.1f, BlowableLayer))
-            {
-                CellsToBlowR.Add(new Vector2(transform.position.x + i, transform.position.y));
-                break;
-            }
-            CellsToBlowR.Add(new Vector2(transform.position.x + i, transform.position.y));
-        }
-        // U
-        for (int i = 1; i <= FireLength; i++)
-        {
-            if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y + i), 0.1f, StoneLayer))
-            {
-                break;
-            }
-            if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y + i), 0.1f, BlowableLayer))
-            {
-                CellsToBlowU.Add(new Vector2(transform.position.x, transform.position.y + i));
-                break;
-            }
-            CellsToBlowU.Add(new Vector2(transform.position.x, transform.position.y + i));
-        }
-        // D
-        for (int i = 1; i <= FireLength; i++)
-        {
-            if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y - i), 0.1f, StoneLayer))
-            {
-                break;
-            }
-            if (Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y - i), 0.1f, BlowableLayer))
-            {
-                CellsToBlowD.Add(new Vector2(transform.position.x, transform.position.y - i));
-                break;
-            }
-            CellsToBlowD.Add(new Vector2(transform.position.x, transform.position.y - i));
-        }
+        
+        CalculateDirection(CellsToBlowL, SidesFireDirection.Left);
+        CalculateDirection(CellsToBlowR, SidesFireDirection.Right);
+        CalculateDirection(CellsToBlowU, SidesFireDirection.Up);
+        CalculateDirection(CellsToBlowD, SidesFireDirection.Down);
+        
         calculated = true;
     }
 
-    void OnDrawGizmos()
+    private void CalculateDirection(ICollection<Vector2> listBlow, Vector2 direction)
     {
-       
-        foreach (var item in CellsToBlowL)
+        for (var i = 1; i <= FireLength; i++)
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(item, 0.2f);
-        }
-        foreach (var item in CellsToBlowR)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawSphere(item, 0.2f);
-        }
-        foreach (var item in CellsToBlowU)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(item, 0.2f);
-        }
-        foreach (var item in CellsToBlowD)
-        {
-            Gizmos.color = Color.gray;
-            Gizmos.DrawSphere(item, 0.2f);
+            var coordinateCell = new Vector2(transform.position.x + i*direction.x, transform.position.y + i*direction.y);
+            if (Physics2D.OverlapCircle(coordinateCell, 0.1f, StoneLayer))
+            {
+                break;
+            }
+            if (Physics2D.OverlapCircle(coordinateCell, 0.1f, BlowableLayer))
+            {
+                listBlow.Add(coordinateCell);
+                break;
+            }
+            listBlow.Add(coordinateCell);
         }
     }
 }

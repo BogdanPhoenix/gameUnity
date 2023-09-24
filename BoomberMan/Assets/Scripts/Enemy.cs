@@ -39,7 +39,7 @@ public class Enemy : MonoBehaviour
                 var r = Random.Range(0, PathFinder.FreeNodes.Count);                
                 RandomPath = PathFinder.GetPath(PathFinder.FreeNodes[r].Position);
                 CurrentPath = RandomPath;
-                print(CurrentPath.Count);
+                //print(CurrentPath.Count);
             }
             
         }
