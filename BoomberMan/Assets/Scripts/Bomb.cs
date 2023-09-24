@@ -1,16 +1,9 @@
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
-    private float Counter;
-    private int FireLength;
-    
-    private List<Vector2> CellsToBlowL;
-    private List<Vector2> CellsToBlowR;
-    private List<Vector2> CellsToBlowU;
-    private List<Vector2> CellsToBlowD;
-    
     public GameObject FireMid;
     public GameObject FireHorizontal;
     public GameObject FireLeft;
@@ -18,17 +11,35 @@ public class Bomb : MonoBehaviour
     public GameObject FireVertical;
     public GameObject FireTop;
     public GameObject FireBottom;
-    
+
     public float Delay;
+    private float Counter;
+
     public LayerMask StoneLayer;
     public LayerMask BlowableLayer;
-    
+
+    public List<Vector2> CellsToBlowR;
+    public List<Vector2> CellsToBlowL;
+    public List<Vector2> CellsToBlowU;
+    public List<Vector2> CellsToBlowD;
+
+    private bool calculated;
+    private bool canTick;
+
+    private int FireLength;
+
+    private BomberMan bomberman;
+
     // Start is called before the first frame update
     void Start()
     {
+        bomberman = FindObjectOfType<BomberMan>();
+        if (!bomberman.CheckDetonator()) canTick = true;
+        else canTick = false;
+        calculated = false;
         Counter = Delay;
-        CellsToBlowL = new List<Vector2>();
         CellsToBlowR = new List<Vector2>();
+        CellsToBlowL = new List<Vector2>();
         CellsToBlowU = new List<Vector2>();
         CellsToBlowD = new List<Vector2>();
     }
@@ -38,88 +49,65 @@ public class Bomb : MonoBehaviour
     {
         if (Counter > 0)
         {
-            Counter -= Time.deltaTime;
-        }
+            if(canTick)Counter -= Time.deltaTime;
+        } 
         else
         {
-            Blow();
-            Destroy(gameObject);
+            Blow();            
         }
     }
-    
+
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Fire"))
+        if (other.gameObject.tag == "Fire")
         {
             Blow();
-            Destroy(gameObject);
         }
     }
 
-    private void Blow()
+    public void Blow()
     {
-        CalculateFire();
+        
+        CalculateFireDirections();
         Instantiate(FireMid, transform.position, transform.rotation);
-        
         //L
-        for (int i = 0; i < CellsToBlowL.Count; ++i)
-        {
-            if (i == CellsToBlowL.Count - 1)
+        if (CellsToBlowL.Count > 0)
+            for (int i = 0; i < CellsToBlowL.Count; i++)
             {
-                Instantiate(FireLeft, CellsToBlowL[i], transform.rotation);
+                if (i == CellsToBlowL.Count - 1) Instantiate(FireLeft, CellsToBlowL[i], transform.rotation);
+                else Instantiate(FireHorizontal, CellsToBlowL[i], transform.rotation);
             }
-            else
-            {
-                Instantiate(FireHorizontal, CellsToBlowL[i], transform.rotation);
-            }
-        }
-        
         //R
-        for (int i = 0; i < CellsToBlowR.Count; ++i)
-        {
-            if (i == CellsToBlowR.Count - 1)
+        if (CellsToBlowR.Count > 0)
+            for (int i = 0; i < CellsToBlowR.Count; i++)
             {
-                Instantiate(FireRight, CellsToBlowR[i], transform.rotation);
+                if (i == CellsToBlowR.Count - 1) Instantiate(FireRight, CellsToBlowR[i], transform.rotation);
+                else Instantiate(FireHorizontal, CellsToBlowR[i], transform.rotation);
             }
-            else
-            {
-                Instantiate(FireHorizontal, CellsToBlowR[i], transform.rotation);
-            }
-        }
-        
         //U
-        for (int i = 0; i < CellsToBlowU.Count; ++i)
-        {
-            if (i == CellsToBlowU.Count - 1)
+        if (CellsToBlowU.Count > 0)
+            for (int i = 0; i < CellsToBlowU.Count; i++)
             {
-                Instantiate(FireTop, CellsToBlowU[i], transform.rotation);
+                if (i == CellsToBlowU.Count - 1) Instantiate(FireTop, CellsToBlowU[i], transform.rotation);
+                else Instantiate(FireVertical, CellsToBlowU[i], transform.rotation);
             }
-            else
+        //D
+        if (CellsToBlowD.Count > 0)
+            for (int i = 0; i < CellsToBlowD.Count; i++)
             {
-                Instantiate(FireVertical, CellsToBlowU[i], transform.rotation);
+                if (i == CellsToBlowD.Count - 1) Instantiate(FireBottom, CellsToBlowD[i], transform.rotation);
+                else Instantiate(FireVertical, CellsToBlowD[i], transform.rotation);
             }
-        }
-        
-        //U
-        for (int i = 0; i < CellsToBlowD.Count; ++i)
-        {
-            if (i == CellsToBlowD.Count - 1)
-            {
-                Instantiate(FireBottom, CellsToBlowD[i], transform.rotation);
-            }
-            else
-            {
-                Instantiate(FireVertical, CellsToBlowD[i], transform.rotation);
-            }
-        }
+
         Destroy(gameObject);
+
+
     }
 
-    private void CalculateFire()
+    void CalculateFireDirections()
     {
-        FireLength = FindObjectOfType<BomberMan>().GetFireLength();
-        CellsToBlowL.Clear();
-        
+        if (calculated) return;
+        FireLength = bomberman.GetFireLength();
         // L
         for (int i = 1; i <= FireLength; i++)
         {
@@ -176,10 +164,12 @@ public class Bomb : MonoBehaviour
             }
             CellsToBlowD.Add(new Vector2(transform.position.x, transform.position.y - i));
         }
+        calculated = true;
     }
 
-    private void OnDrawGizmos()
+    void OnDrawGizmos()
     {
+       
         foreach (var item in CellsToBlowL)
         {
             Gizmos.color = Color.yellow;

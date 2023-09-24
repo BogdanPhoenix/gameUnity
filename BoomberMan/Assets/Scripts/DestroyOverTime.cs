@@ -1,12 +1,12 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DestroyOverTime : MonoBehaviour
 {
+    public float Delay;
     private float Counter;
     
-    public float Delay;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,13 +16,7 @@ public class DestroyOverTime : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Counter > 0)
-        {
-            Counter -= Time.deltaTime;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Counter > 0) Counter -= Time.deltaTime;
+        else Destroy(gameObject);
     }
 }
