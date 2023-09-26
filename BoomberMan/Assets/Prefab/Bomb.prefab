@@ -27,12 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2677059411980866636}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2677059411980866738
 SpriteRenderer:
@@ -45,9 +46,12 @@ SpriteRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -72,8 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -6614373457484812694, guid: 3f82e01eff4ea2e4a8621766adb22de1,
-    type: 3}
+  m_Sprite: {fileID: -6614373457484812694, guid: 3f82e01eff4ea2e4a8621766adb22de1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -94,6 +97,25 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -122,29 +144,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e01c014ea48d63949888e2d500bb4934, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FireMid: {fileID: 2977379428824104611, guid: 5ee56ebdb88cb294dbdc73f3e0853aa7, type: 3}
-  FireHorizontal: {fileID: 6039150320591894681, guid: b6faf510ad4f54244b3f51353c8cace8,
-    type: 3}
-  FireLeft: {fileID: 7608796056460976077, guid: 3024f8b3d80817842ba73337dc462df3,
-    type: 3}
-  FireRight: {fileID: 7355077810703095973, guid: bd7d3e401014a5b4aabaceb377fdf357,
-    type: 3}
-  FireVertical: {fileID: 1326290298328591476, guid: f7f97de1f248f2c43a076d7c5b3d2040,
-    type: 3}
-  FireTop: {fileID: 113853098240178710, guid: 97d06d436bc19e24babd1af58dbcc906, type: 3}
-  FireBottom: {fileID: 761193065816827812, guid: 3050cd7d2b5ba08489a239918478009e,
-    type: 3}
-  Delay: 2
-  StoneLayer:
+  fireObject:
+    Mid: {fileID: 2977379428824104611, guid: 5ee56ebdb88cb294dbdc73f3e0853aa7, type: 3}
+    Horizontal: {fileID: 6039150320591894681, guid: b6faf510ad4f54244b3f51353c8cace8, type: 3}
+    Left: {fileID: 7608796056460976077, guid: 3024f8b3d80817842ba73337dc462df3, type: 3}
+    Right: {fileID: 7355077810703095973, guid: bd7d3e401014a5b4aabaceb377fdf357, type: 3}
+    Vertical: {fileID: 1326290298328591476, guid: f7f97de1f248f2c43a076d7c5b3d2040, type: 3}
+    Top: {fileID: 113853098240178710, guid: 97d06d436bc19e24babd1af58dbcc906, type: 3}
+    Bottom: {fileID: 761193065816827812, guid: 3050cd7d2b5ba08489a239918478009e, type: 3}
+  delay: 2
+  stoneLayer:
     serializedVersion: 2
     m_Bits: 256
-  BlowableLayer:
+  blowableLayer:
     serializedVersion: 2
     m_Bits: 1536
-  CellsToBlowR: []
-  CellsToBlowL: []
-  CellsToBlowU: []
-  CellsToBlowD: []
 --- !u!50 &2643736101742805722
 Rigidbody2D:
   serializedVersion: 4
@@ -162,6 +176,12 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0

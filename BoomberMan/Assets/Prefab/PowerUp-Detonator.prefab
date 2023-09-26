@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 7
-  invincibilityTime: 0
+  invincibilityTime: 2
 --- !u!50 &-2862761251443739359
 Rigidbody2D:
   serializedVersion: 4

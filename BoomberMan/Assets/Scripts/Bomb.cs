@@ -1,48 +1,54 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Bomb : MonoBehaviour
 {
-    public GameObject FireMid;
-    public GameObject FireHorizontal;
-    public GameObject FireLeft;
-    public GameObject FireRight;
-    public GameObject FireVertical;
-    public GameObject FireTop;
-    public GameObject FireBottom;
-
-    public float Delay;
-    private float Counter;
-
-    public LayerMask StoneLayer;
-    public LayerMask BlowableLayer;
-
-    public List<Vector2> CellsToBlowR;
-    public List<Vector2> CellsToBlowL;
-    public List<Vector2> CellsToBlowU;
-    public List<Vector2> CellsToBlowD;
-
-    private bool calculated;
-    private bool canTick;
-
-    private int FireLength;
-
-    private BomberMan bomberman;
-    
     private static class SidesFireDirection
     {
-        public static readonly Vector2 Left = new Vector2(-1, 0);
-        public static readonly Vector2 Right = new Vector2(1, 0);
-        public static readonly Vector2 Up = new Vector2(0, 1);
-        public static readonly Vector2 Down = new Vector2(0, -1);
+        public static readonly Vector2 Left = new(-1, 0);
+        public static readonly Vector2 Right = new(1, 0);
+        public static readonly Vector2 Up = new(0, 1);
+        public static readonly Vector2 Down = new(0, -1);
     }
+    
+    [System.Serializable]
+    public struct FireObjects
+    {
+        [FormerlySerializedAs("Mid")] public GameObject mid;
+        [FormerlySerializedAs("Horizontal")] public GameObject horizontal;
+        [FormerlySerializedAs("Left")] public GameObject left;
+        [FormerlySerializedAs("Right")] public GameObject right;
+        [FormerlySerializedAs("Vertical")] public GameObject vertical;
+        [FormerlySerializedAs("Top")] public GameObject top;
+        [FormerlySerializedAs("Bottom")] public GameObject bottom;
+    }
+    
+    private float Counter;
+    private int FireLength;
+    private BomberMan Bomberman;
+    
+    private List<Vector2> CellsToBlowR;
+    private List<Vector2> CellsToBlowL;
+    private List<Vector2> CellsToBlowU;
+    private List<Vector2> CellsToBlowD;
+    
+    private bool Calculated;
+    private bool CanTick;
+    
+    [FormerlySerializedAs("FireObjects")] public FireObjects fireObject;
+    [FormerlySerializedAs("Delay")] public float delay;
+
+    [FormerlySerializedAs("StoneLayer")] public LayerMask stoneLayer;
+    [FormerlySerializedAs("BlowableLayer")] public LayerMask blowableLayer;
     
     private void Start()
     {
-        bomberman = FindObjectOfType<BomberMan>();
-        canTick = !bomberman.CheckDetonator();
-        calculated = false;
-        Counter = Delay;
+        Bomberman = FindObjectOfType<BomberMan>();
+        CanTick = !Bomberman.CheckDetonator();
+        Calculated = false;
+        Counter = delay;
+        
         CellsToBlowR = new List<Vector2>();
         CellsToBlowL = new List<Vector2>();
         CellsToBlowU = new List<Vector2>();
@@ -55,7 +61,7 @@ public class Bomb : MonoBehaviour
         {
             Blow();
         }
-        else if (canTick)
+        else if (CanTick)
         {
             Counter -= Time.deltaTime;
         }
@@ -70,17 +76,17 @@ public class Bomb : MonoBehaviour
     }
 
     /*
-     * Метод для побудови вогню від бомби
+     * Метод для знищення бомби
      */
     public void Blow()
     {
         CalculateFireDirections();
-        Instantiate(FireMid, transform.position, transform.rotation);
+        Instantiate(fireObject.mid, transform.position, transform.rotation);
         
-        DefiningImpactPrefabs(CellsToBlowL, FireHorizontal, FireLeft);
-        DefiningImpactPrefabs(CellsToBlowR, FireHorizontal, FireRight);
-        DefiningImpactPrefabs(CellsToBlowU, FireVertical, FireTop);
-        DefiningImpactPrefabs(CellsToBlowD, FireVertical, FireBottom);
+        DefiningImpactPrefabs(CellsToBlowL, fireObject.horizontal, fireObject.left);
+        DefiningImpactPrefabs(CellsToBlowR, fireObject.horizontal, fireObject.right);
+        DefiningImpactPrefabs(CellsToBlowU, fireObject.vertical, fireObject.top);
+        DefiningImpactPrefabs(CellsToBlowD, fireObject.vertical, fireObject.bottom);
 
         Destroy(gameObject);
     }
@@ -103,16 +109,16 @@ public class Bomb : MonoBehaviour
      */
     private void CalculateFireDirections()
     {
-        if (calculated) return;
+        if (Calculated) return;
         
-        FireLength = bomberman.GetFireLength();
+        FireLength = Bomberman.GetFireLength();
         
         CalculateDirection(CellsToBlowL, SidesFireDirection.Left);
         CalculateDirection(CellsToBlowR, SidesFireDirection.Right);
         CalculateDirection(CellsToBlowU, SidesFireDirection.Up);
         CalculateDirection(CellsToBlowD, SidesFireDirection.Down);
         
-        calculated = true;
+        Calculated = true;
     }
 
     private void CalculateDirection(ICollection<Vector2> listBlow, Vector2 direction)
@@ -120,11 +126,11 @@ public class Bomb : MonoBehaviour
         for (var i = 1; i <= FireLength; i++)
         {
             var coordinateCell = new Vector2(transform.position.x + i*direction.x, transform.position.y + i*direction.y);
-            if (Physics2D.OverlapCircle(coordinateCell, 0.1f, StoneLayer))
+            if (Physics2D.OverlapCircle(coordinateCell, 0.1f, stoneLayer))
             {
                 break;
             }
-            if (Physics2D.OverlapCircle(coordinateCell, 0.1f, BlowableLayer))
+            if (Physics2D.OverlapCircle(coordinateCell, 0.1f, blowableLayer))
             {
                 listBlow.Add(coordinateCell);
                 break;

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Enum;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -39,9 +40,7 @@ public class Enemy : MonoBehaviour
                 var r = Random.Range(0, PathFinder.FreeNodes.Count);                
                 RandomPath = PathFinder.GetPath(PathFinder.FreeNodes[r].Position);
                 CurrentPath = RandomPath;
-                //print(CurrentPath.Count);
             }
-            
         }
         else
         {
@@ -50,13 +49,12 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void Damage(int source)
+    public void Damage(TypeDamage source)
     {
-        if (source == 1)
-        {
-            Instantiate(DeathEffect, transform.position, transform.rotation);
-            Destroy (gameObject);
-        }
+        if (source != TypeDamage.Enemy) return;
+        
+        Instantiate(DeathEffect, transform.position, transform.rotation);
+        Destroy (gameObject);
     }
 
     // Update is called once per frame

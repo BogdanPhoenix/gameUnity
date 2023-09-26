@@ -46,22 +46,34 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets/Scripts/Bomb.cs" />
+     <Compile Include="Assets/Scripts/ChainResponsibility/Direction/CheckDirection.cs" />
      <Compile Include="Assets/Scripts/Enemy.cs" />
      <Compile Include="Assets/Scripts/Damage.cs" />
      <Compile Include="Assets/Scripts/BomberMan.cs" />
      <Compile Include="Assets/Scripts/PathFinder.cs" />
+     <Compile Include="Assets/Scripts/Command/Button/ButtonActiveCommand.cs" />
      <Compile Include="Assets/Scripts/DestroyOverTime.cs" />
      <Compile Include="Assets/Scripts/PowerUp.cs" />
+     <Compile Include="Assets/Scripts/ChainResponsibility/ChainParent.cs" />
+     <Compile Include="Assets/Scripts/Command/Button/AddBombButton.cs" />
      <Compile Include="Assets/Scripts/Enum/PowerUpType.cs" />
+     <Compile Include="Assets/Scripts/Command/Button/DetonatorBombButton.cs" />
+     <Compile Include="Assets/Scripts/ChainResponsibility/Direction/ChooseDirection.cs" />
+     <Compile Include="Assets/Scripts/Enum/TypeDamage.cs" />
+     <Compile Include="Assets/Scripts/Enum/DirectionPerson.cs" />
      <Compile Include="Assets/Scripts/Fire.cs" />
      <Compile Include="Assets/Scripts/CameraController.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets/Scenes" />
+     <Folder Include="Assets/Scripts/ChainResponsibility/Direction" />
      <Folder Include="Assets/Animation/Bomberman" />
      <Folder Include="Assets/Prefab" />
      <Folder Include="Assets/Prefab/Fire" />
+     <Folder Include="Assets/Scripts/Command/Button" />
      <Folder Include="Assets/Scripts/Enum" />
      <Folder Include="Assets/Animation" />
+     <Folder Include="Assets/Scripts/Command" />
+     <Folder Include="Assets/Scripts/ChainResponsibility" />
      <Folder Include="Assets/Scripts" />
      <Folder Include="Assets/Graphics" />
      <Reference Include="UnityEngine">

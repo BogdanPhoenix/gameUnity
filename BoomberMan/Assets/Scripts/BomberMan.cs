@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using ChainResponsibility.Command.Button;
+using ChainResponsibility.Direction;
 using Enum;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class BomberMan : MonoBehaviour
 {
-    private bool ButtonLeft;
-    private bool ButtonRight;
-    private bool ButtonUp;
-    private bool ButtonDown;
-    private bool ButtonBomb;
-    private bool ButtonDetonate;
+    private DirectionPerson NextStep;
+    private ChooseDirection Direction;
+    private ButtonActiveCommand Detonator;
+    private ButtonActiveCommand AddBomb;
 
     private int BombsAllowed;
     private int FireLength;
-    //private int SpeedBoosts;
     private bool NoclipWalls;
     private bool NoclipBombs;
     private bool NoclipFire;
@@ -25,12 +22,6 @@ public class BomberMan : MonoBehaviour
     private bool CanMove;
     private bool IsMoving;
     private bool InsideBomb;
-    private bool InsideWall;
-    private bool InsideFire;
-
-
-
-    public int Direction; // <4 8^ 6> 2v
 
     public Transform Sensor;
     public float SensorSize = 0.7f;
@@ -44,37 +35,114 @@ public class BomberMan : MonoBehaviour
     public LayerMask BrickLayer;
     public LayerMask FireLayer;
 
-    public GameObject Bomb;
+    [FormerlySerializedAs("Bomb")] public GameObject BombPrefab;
     public GameObject DeathEffect;
 
-
-
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         BombsAllowed = 1;
         FireLength = 1;
+        NextStep = DirectionPerson.Stop;
+
+        Detonator = new DetonatorBombButton(KeyCode.X);
+        AddBomb = new AddBombButton(KeyCode.Z, BombPrefab);
+        
+        Direction = ChooseDirection.Link(
+            new CheckDirection(KeyCode.LeftArrow, DirectionPerson.Left),
+            new CheckDirection(KeyCode.UpArrow, DirectionPerson.Up),
+            new CheckDirection(KeyCode.RightArrow, DirectionPerson.Right),
+            new CheckDirection(KeyCode.DownArrow, DirectionPerson.Down)
+            );
     }
-    // Update is called once per frame
-    void Update()
+
+    private void Update()
     {
-        GetInput();
-        GetDirection();
         HandleSensor();
         HandleBombs();
         Move();
 
         Animate();
     }
+    
+    private void HandleSensor()
+    {
+        NextStep = Direction.Check();
+        
+        Sensor.transform.localPosition = new Vector2(0, 0);
+        var size = new Vector2(SensorSize, SensorSize);
+        
+        InsideBomb = CheckLayer(size, BombLayer);
+        
+        Sensor.transform.localPosition = NextStep switch
+        {
+            DirectionPerson.Down => new Vector2(0, -SensorRange),
+            DirectionPerson.Left => new Vector2(-SensorRange, 0),
+            DirectionPerson.Right => new Vector2(SensorRange, 0),
+            DirectionPerson.Up => new Vector2(0, SensorRange),
+            _ => Sensor.transform.localPosition
+        };
+        
+        CanMove = !CheckLayer(size, StoneLayer) &&
+                  (NoclipWalls || !CheckLayer(size, BrickLayer)) &&
+                  (InsideBomb || NoclipBombs || !CheckLayer(size, BombLayer));
+    }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private bool CheckLayer(Vector2 size, LayerMask layer)
+    {
+        return Physics2D.OverlapBox(Sensor.position, size, 0, layer);
+    }
+    
+    private void HandleBombs()
+    {
+        AddBomb.Execute();
+        Detonator.Execute();
+    }
+    
+    private void Move()
+    {
+        if (!CanMove)
+        {
+            IsMoving = false;
+            return;
+        }
+        IsMoving = true;
+        
+        switch (NextStep)
+        {            
+            case DirectionPerson.Down:
+                transform.position = new Vector2(Mathf.Round(transform.position.x), transform.position.y - MoveSpeed * Time.deltaTime);
+                break;
+            case DirectionPerson.Left:
+                transform.position = new Vector2(transform.position.x - MoveSpeed * Time.deltaTime, Mathf.Round(transform.position.y));
+                GetComponent<SpriteRenderer>().flipX = false;
+                break;
+            case DirectionPerson.Right:
+                transform.position = new Vector2(transform.position.x + MoveSpeed * Time.deltaTime, Mathf.Round(transform.position.y));
+                GetComponent<SpriteRenderer>().flipX = true;
+                break;
+            case DirectionPerson.Up:
+                transform.position = new Vector2(Mathf.Round(transform.position.x), transform.position.y + MoveSpeed * Time.deltaTime);
+                break;
+            case DirectionPerson.Stop:
+                IsMoving = false;
+                break;
+        }
+    }
+    
+    private void Animate()
+    {
+        var animator = GetComponent<Animator>();
+        animator.SetInteger("Direction", (int)NextStep);
+        animator.SetBool("Moving", IsMoving);
+    }
+    
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.gameObject.CompareTag("PowerUp")) return;
         switch(other.GetComponent<PowerUp>().type)
         {
             case PowerUpType.EXTRA_BOMB:
-                GetExtraBomb();
+                AddExtraBomb();
                 break;
             case PowerUpType.FIRE:
                 GetExtraFire();
@@ -98,185 +166,64 @@ public class BomberMan : MonoBehaviour
         Destroy(other.gameObject);
     }
 
-    public void Damage(int source)
+    public void Damage(TypeDamage source)
     {
-        if (source == 2) Die();
-        else if(source == 1 && !NoclipFire) Die();
+        if (source == TypeDamage.Enemy || (source == TypeDamage.Fire && !NoclipFire)) Die();
     }
 
-    void Die()
+    private void Die()
     {
         Instantiate(DeathEffect, transform.position, transform.rotation);
         Destroy(gameObject);
     }
 
-    void GetDetonator()
+    private void GetDetonator()
     {
         HasDetonator = true;
     }
 
-    void GetNoclipWalls()
+    private void GetNoclipWalls()
     {
         NoclipWalls = true;
     }
 
-    void GetNoclipBombs()
+    private void GetNoclipBombs()
     {
         NoclipBombs = true;
     }
 
-    void GetNoclipFire()
+    private void GetNoclipFire()
     {
         NoclipFire = true;
     }
 
     private void GetExtraSpeed()
     {
-        //SpeedBoosts++;
-        MoveSpeed = MoveSpeed += SpeedBoostPower;
+        MoveSpeed += SpeedBoostPower;
     }
 
     private void GetExtraFire()
     {
-        FireLength++;
+        ++FireLength;
     }
 
-    private void GetExtraBomb()
+    private void AddExtraBomb()
     {
-        BombsAllowed++;
+        ++BombsAllowed;
     }
 
-    private void HandleBombs()
+    public int GetExtraBomb()
     {
-        if(ButtonBomb && GameObject.FindGameObjectsWithTag("Bomb").Length < BombsAllowed && !InsideBomb && !InsideFire && !InsideWall)
-        {
-            Instantiate(Bomb, new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y)), transform.rotation);
-            var enemies = FindObjectsOfType<Enemy>();
-            foreach (var item in enemies)
-            {
-                item.ReCalculatePath();
-            }
-        }
-        if(ButtonDetonate)
-        {
-            print("det");
-            var bombs = FindObjectsOfType<Bomb>();
-            foreach (var bomb in bombs)
-            {
-                bomb.Blow();
-            }
-        }
-    }
-
-    private void Move()
-    {
-        if (!CanMove)
-        {
-            IsMoving = false;
-            return;
-        }
-        IsMoving = true;
-        switch (Direction)
-        {
-            case 2:
-                transform.position = new Vector2(Mathf.Round(transform.position.x), transform.position.y - MoveSpeed * Time.deltaTime);
-                break;
-            case 4:
-                transform.position = new Vector2(transform.position.x - MoveSpeed * Time.deltaTime, Mathf.Round(transform.position.y));
-                GetComponent<SpriteRenderer>().flipX = false;
-                break;
-            case 6:
-                transform.position = new Vector2(transform.position.x + MoveSpeed * Time.deltaTime, Mathf.Round(transform.position.y));
-                GetComponent<SpriteRenderer>().flipX = true;
-                break;
-            case 8:
-                transform.position = new Vector2(Mathf.Round(transform.position.x), transform.position.y + MoveSpeed * Time.deltaTime);
-                break;
-            case 5:
-                IsMoving = false;
-                break;
-        }
-    }
-
-    void HandleSensor()
-    {
-        Sensor.transform.localPosition = new Vector2(0, 0);
-        InsideWall = Physics2D.OverlapBox(Sensor.position, new Vector2(SensorSize, SensorSize), 0, BrickLayer);
-        InsideBomb = Physics2D.OverlapBox(Sensor.position, new Vector2(SensorSize, SensorSize), 0, BombLayer);
-        InsideFire = Physics2D.OverlapBox(Sensor.position, new Vector2(SensorSize, SensorSize), 0, FireLayer);
-        switch (Direction)
-        {            
-            case 2:
-                Sensor.transform.localPosition = new Vector2(0, -SensorRange);
-                break;
-            case 4:
-                Sensor.transform.localPosition = new Vector2(-SensorRange, 0);
-                break;
-            case 6:
-                Sensor.transform.localPosition = new Vector2(SensorRange, 0);
-                break;
-            case 8:
-                Sensor.transform.localPosition = new Vector2(0, SensorRange);
-                break;
-        }
-        CanMove = !Physics2D.OverlapBox(Sensor.position, new Vector2(SensorSize, SensorSize), 0, StoneLayer);
-        if (CanMove)
-        {
-            if(!NoclipWalls)
-                CanMove = !Physics2D.OverlapBox(Sensor.position, new Vector2(SensorSize, SensorSize), 0, BrickLayer);
-        }
-        if (CanMove && !InsideBomb)
-        {
-            if (!NoclipBombs)
-                CanMove = !Physics2D.OverlapBox(Sensor.position, new Vector2(SensorSize, SensorSize), 0, BombLayer);
-        }
-            
-    }
-
-    void GetDirection()
-    {
-        Direction = 5;
-        if (ButtonLeft) Direction = 4;
-        if (ButtonRight) Direction = 6;
-        if (ButtonUp) Direction = 8;
-        if (ButtonDown) Direction = 2;
+        return BombsAllowed;
     }
 
     public bool CheckDetonator()
     {
         return HasDetonator;
     }
-    
-    void GetInput()
-    {
-        ButtonLeft = Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow);
-        ButtonRight = !Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow);
-        ButtonUp = !Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow);
-        ButtonDown = !Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.UpArrow) && Input.GetKey(KeyCode.DownArrow);
-
-        ButtonBomb = Input.GetKeyDown(KeyCode.Z);
-        ButtonDetonate = Input.GetKeyDown(KeyCode.X);
-    }
-
-    public void AddBomb()
-    {
-        BombsAllowed++;
-    }
-
-    public void AddFireLenght()
-    {
-        FireLength++;
-    }
 
     public int GetFireLength()
     {
         return FireLength;
-    }
-
-    void Animate()
-    {
-        var animator = GetComponent<Animator>();
-        animator.SetInteger("Direction", Direction);
-        animator.SetBool("Moving", IsMoving);
     }
 }
