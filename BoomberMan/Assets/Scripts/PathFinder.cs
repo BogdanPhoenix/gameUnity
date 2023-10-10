@@ -1,136 +1,139 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class PathFinder : MonoBehaviour
+public class PathFinder
 {
-    public List<Vector2> PathToTarget;
-    public List<Node> CheckedNodes = new List<Node>();
-    public List<Node> FreeNodes = new List<Node>();
-    List<Node> WaitingNodes = new List<Node>();
-    public GameObject Target;
-    public LayerMask SolidLayer;
+    private System.Collections.Generic.ISet<Node> CheckedNodes;
+    private System.Collections.Generic.ISet<Node> FreeNodes = new HashSet<Node>();
+    private IList<Node> WaitingNodes;
+    private readonly LayerMask SolidLayer;
+    private readonly GameObject EnemyObject;
 
-    
-    // Update is called once per frame
-    void Update()
+    public PathFinder(GameObject enemyObject, LayerMask solidLayer)
     {
-        //PathToTarget = GetPath(Target.transform.position);
+        EnemyObject = enemyObject;
+        SolidLayer = solidLayer;
     }
 
-    public List<Vector2> GetPath(Vector2 target)
+    public Vector2Int GetRandomPositionOnPath()
     {
-        PathToTarget = new List<Vector2>();
-        CheckedNodes = new List<Node>();
-        WaitingNodes = new List<Node>();
-
-        Vector2 StartPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-        Vector2 TargetPosition = new Vector2(Mathf.Round(target.x), Mathf.Round(target.y));
+        if (FreeNodes.Count == 0)
+        {
+            return Vector2Int.zero;
+        }
         
-        if(StartPosition == TargetPosition) return PathToTarget;
+        var randomPos = Random.Range(0, FreeNodes.Count);
+        var node = FreeNodes.ElementAt(randomPos);
+        
+        return node!.Position;
+    }
 
-        Node startNode = new Node(0, StartPosition, TargetPosition, null);
+    public Vector2Int NextStep(Vector2 target)
+    {
+        var path = GetPath(target);
+        return path.Count == 0 ? Vector2Int.zero : path[^1];
+    }
+    
+    private IList<Vector2Int> GetPath(Vector2 target)
+    {
+        var startPosition = Vector2Int.RoundToInt(EnemyObject.transform.position);
+        var targetPosition = Vector2Int.RoundToInt(target);
+        
+        if(startPosition == targetPosition) return new List<Vector2Int>();
+        
+        var startNode = new Node(0, startPosition, targetPosition, null);
+        
+        WaitingNodes = new List<Node>();
+        CheckedNodes = new HashSet<Node>();
+        
         CheckedNodes.Add(startNode);
         WaitingNodes.AddRange(GetNeighbourNodes(startNode));
+        
         while(WaitingNodes.Count > 0)
         {
-            Node nodeToCheck = WaitingNodes.Where(x => x.F == WaitingNodes.Min(y => y.F)).FirstOrDefault();
-
-            if (nodeToCheck.Position == TargetPosition)
+            var nodeToCheck = WaitingNodes.FirstOrDefault(x => x.F == WaitingNodes.Min(y => y.F));
+    
+            if (nodeToCheck!.Position == targetPosition)
             {
-                return CalculatePathFromNode(nodeToCheck);
+                return CalculatePathFromNode(nodeToCheck) as IList<Vector2Int>;
             }
-
-            var walkable = !Physics2D.OverlapCircle(nodeToCheck.Position, 0.1f, SolidLayer);
-            if(!walkable)
+    
+            if(CheckWalkable(nodeToCheck))
+            {
+                WaitingNodes.Remove(nodeToCheck);
+                if (CheckedNodes.Any(x => x.Position == nodeToCheck.Position)) continue;
+                CheckedNodes.Add(nodeToCheck);
+                WaitingNodes.AddRange(GetNeighbourNodes(nodeToCheck));
+            }
+            else
             {
                 WaitingNodes.Remove(nodeToCheck);
                 CheckedNodes.Add(nodeToCheck);
             }
-            else if(walkable)
-            {
-                WaitingNodes.Remove(nodeToCheck);
-                if(!CheckedNodes.Where(x => x.Position == nodeToCheck.Position).Any()) {
-                    CheckedNodes.Add(nodeToCheck);
-                    WaitingNodes.AddRange(GetNeighbourNodes(nodeToCheck));
-                } 
-            }
         }
         FreeNodes = CheckedNodes;
-
-        return PathToTarget;
+        
+        return new List<Vector2Int>();
     }
 
-    public List<Vector2> CalculatePathFromNode(Node node)
+    private IEnumerable<Vector2Int> CalculatePathFromNode(Node node)
     {
-        var path = new List<Vector2>();
-        Node currentNode = node;
+        var path = new List<Vector2Int>();
+        var currentNode = node;
 
         while(currentNode.PreviousNode != null)
         {
-            path.Add(new Vector2(currentNode.Position.x, currentNode.Position.y));
+            if (CheckWalkable(currentNode))
+            {
+                path.Add(currentNode.Position);
+            }
             currentNode = currentNode.PreviousNode;
         }
 
         return path;
     }
 
-    List<Node> GetNeighbourNodes (Node node)
+    private bool CheckWalkable(Node node)
     {
-        var Neighbours = new List<Node>();
-
-        Neighbours.Add(new Node(node.G + 1, new Vector2(
-            node.Position.x-1, node.Position.y), 
-            node.TargetPosition, 
-            node));
-        Neighbours.Add(new Node(node.G + 1, new Vector2(
-            node.Position.x+1, node.Position.y),
-            node.TargetPosition,
-            node));
-        Neighbours.Add(new Node(node.G + 1, new Vector2(
-            node.Position.x, node.Position.y-1),
-            node.TargetPosition,
-            node));
-        Neighbours.Add(new Node(node.G + 1, new Vector2(
-            node.Position.x, node.Position.y+1),
-            node.TargetPosition,
-            node));
-        return Neighbours;
+        return !Physics2D.OverlapCircle(node.Position, 0.1f, SolidLayer);
     }
 
-    void OnDrawGizmos()
+    private static IEnumerable<Node> GetNeighbourNodes (Node node)
     {
-        foreach (var item in CheckedNodes)
+        var neighbours = new List<Node>
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(new Vector2(item.Position.x, item.Position.y), 0.1f);
-        }
-        if (PathToTarget != null)
-        foreach (var item in PathToTarget)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(new Vector2(item.x, item.y), 0.2f);
-        }
+            new(node.DistanceFromStartToNode + 1, new Vector2Int(
+                    node.Position.x-1, node.Position.y), node.TargetPosition, node),
+            new(node.DistanceFromStartToNode + 1, new Vector2Int(
+                    node.Position.x+1, node.Position.y), node.TargetPosition, node),
+            new(node.DistanceFromStartToNode + 1, new Vector2Int(
+                    node.Position.x, node.Position.y-1), node.TargetPosition, node),
+            new(node.DistanceFromStartToNode + 1, new Vector2Int(
+                    node.Position.x, node.Position.y+1), node.TargetPosition, node)
+        };
+
+        return neighbours;
     }
-
-}
-
-public class Node 
-{
-    public Vector2 Position;
-    public Vector2 TargetPosition;
-    public Node PreviousNode;
-    public int F; // F=G+H
-    public int G; // расстояние от старта до ноды
-    public int H; // расстояние от ноды до цели
-
-    public Node(int g, Vector2 nodePosition, Vector2 targetPosition, Node previousNode)
+    private class Node
     {
-        Position = nodePosition;
-        TargetPosition = targetPosition;
-        PreviousNode = previousNode;
-        G = g;
-        H = (int)Mathf.Abs(targetPosition.x - Position.x) + (int)Mathf.Abs(targetPosition.y - Position.y);
-        F = G + H;
+        public readonly Vector2Int Position;
+        public readonly Vector2Int TargetPosition;
+        public readonly Node PreviousNode; // Use Node? instead of Node
+        public readonly int F;
+        public readonly int DistanceFromStartToNode;
+
+        public Node(int distanceFromStartToNode, Vector2Int nodePosition, Vector2Int targetPosition, Node previousNode)
+        {
+            Position = nodePosition;
+            TargetPosition = targetPosition;
+            PreviousNode = previousNode;
+            DistanceFromStartToNode = distanceFromStartToNode;
+            var distanceFromNodeToTarget = (int)Vector2Int.Distance(targetPosition, Position);
+            F = DistanceFromStartToNode + distanceFromNodeToTarget;
+        }
     }
+
 }
