@@ -1,21 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Fire : MonoBehaviour
 {
-    public GameObject BrickDeathEffect;
+    [FormerlySerializedAs("BrickDeathEffect")] public GameObject brickDeathEffect;
 
     public void DestroySelf()
     {
         Destroy(gameObject);
     }
 
-    void OnCollisionEnter2D(Collision2D other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.tag == "Brick") {
-            Destroy(other.gameObject);
-            Instantiate(BrickDeathEffect, transform.position, transform.rotation);
-        }
+        if (!other.gameObject.CompareTag("Brick")) return;
+        Destroy(other.gameObject);
+        Instantiate(brickDeathEffect, transform.position, transform.rotation);
     }
 }

@@ -17,8 +17,7 @@ public class BomberMan : MonoBehaviour
     private bool NoclipBombs;
     private bool NoclipFire;
     private bool HasDetonator;
-
-
+    
     private bool CanMove;
     private bool IsMoving;
     private bool InsideBomb;
@@ -175,6 +174,10 @@ public class BomberMan : MonoBehaviour
     {
         Instantiate(DeathEffect, transform.position, transform.rotation);
         Destroy(gameObject);
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        Application.Quit();
     }
 
     private void GetDetonator()

@@ -23,14 +23,10 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        /*
-         * Видалити в майбутьному.
-         * Причина - виникають помилки, якщо гравець загинув, а оновлення сцени продовжується.
-         */
-        if (Bomberman == null) return;
-
-        float cameraHalfHeight = Camera.orthographicSize;
-        float cameraHalfWidth = cameraHalfHeight * ((float)Screen.width / Screen.height);
+        if(Bomberman == null) return;
+        
+        var cameraHalfHeight = Camera.orthographicSize;
+        var cameraHalfWidth = cameraHalfHeight * ((float)Screen.width / Screen.height);
 
         var bombermanPosition = Bomberman.transform.position;
         
