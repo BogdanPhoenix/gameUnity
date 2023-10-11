@@ -1,4 +1,5 @@
-﻿using Enum;
+﻿using System.Collections.Generic;
+using Enum;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -12,10 +13,30 @@ public class Enemy : MonoBehaviour
     public float MoveSpeed;
     public LayerMask SolidLayer;
 
+    public static readonly ISet<Enemy> Enemies = new HashSet<Enemy>();
+
+    public static void AddEnemy(Enemy enemy)
+    {
+        Enemies.Add(enemy);
+    }
+
+    private static void RemoveEnemy(Enemy enemy)
+    {
+        Enemies.Remove(enemy);
+    }
+    
+    // public static void RebuildRoute()
+    // {
+    //     var enemies = FindObjectsOfType<Enemy>();
+    //     foreach (var item in enemies)
+    //     {
+    //         item.ReCalculateNextStep();
+    //     }
+    // }
+    
     public static void RebuildRoute()
     {
-        var enemies = FindObjectsOfType<Enemy>();
-        foreach (var item in enemies)
+        foreach (var item in Enemies)
         {
             item.ReCalculateNextStep();
         }
@@ -26,6 +47,7 @@ public class Enemy : MonoBehaviour
         PathFinder = new PathFinder(gameObject, SolidLayer);
         ReCalculateNextStep();
         IsMoving = true;
+        InvokeRepeating(nameof(Update), 1f, 1f);
     }
     
     private void Update()
@@ -77,6 +99,7 @@ public class Enemy : MonoBehaviour
         if (source == TypeDamage.Enemy) return;
         
         Instantiate(DeathEffect, transform.position, transform.rotation);
+        RemoveEnemy(this);
         Destroy (gameObject);
     }
 }

@@ -47,15 +47,20 @@
   <ItemGroup>
      <Compile Include="Assets/Scripts/Bomb.cs" />
      <Compile Include="Assets/Scripts/ChainResponsibility/Direction/CheckDirection.cs" />
+     <Compile Include="Assets/Scripts/GenerateMap.cs" />
      <Compile Include="Assets/Scripts/Enemy.cs" />
      <Compile Include="Assets/Scripts/Observer/TypeActive.cs" />
      <Compile Include="Assets/Scripts/Damage.cs" />
      <Compile Include="Assets/Scripts/Observer/EventListener.cs" />
      <Compile Include="Assets/Scripts/Observer/EventManager.cs" />
+     <Compile Include="Assets/Scripts/GenerateField/Stone/Axises/GenerateBoardAxisY.cs" />
      <Compile Include="Assets/Scripts/BomberMan.cs" />
      <Compile Include="Assets/Scripts/PathFinder.cs" />
+     <Compile Include="Assets/Scripts/GenerateField/Brick/GenerateBrickBlock.cs" />
      <Compile Include="Assets/Scripts/Command/Button/ButtonActiveCommand.cs" />
+     <Compile Include="Assets/Scripts/GenerateField/Stone/GenerateStoneBlocks.cs" />
      <Compile Include="Assets/Scripts/Observer/Event/RebuildRoute.cs" />
+     <Compile Include="Assets/Scripts/GenerateField/Stone/Axises/GenerateBoard.cs" />
      <Compile Include="Assets/Scripts/DestroyOverTime.cs" />
      <Compile Include="Assets/Scripts/PowerUp.cs" />
      <Compile Include="Assets/Scripts/ChainResponsibility/ChainParent.cs" />
@@ -66,6 +71,7 @@
      <Compile Include="Assets/Scripts/Enum/TypeDamage.cs" />
      <Compile Include="Assets/Scripts/Enum/DirectionPerson.cs" />
      <Compile Include="Assets/Scripts/Fire.cs" />
+     <Compile Include="Assets/Scripts/GenerateField/Stone/Axises/GenerateBoardAxisX.cs" />
      <Compile Include="Assets/Scripts/CameraController.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets/Scenes" />
@@ -73,12 +79,16 @@
      <Folder Include="Assets/Animation/Bomberman" />
      <Folder Include="Assets/Prefab" />
      <Folder Include="Assets/Prefab/Fire" />
+     <Folder Include="Assets/Scripts/GenerateField/Brick" />
      <Folder Include="Assets/Scripts/Command/Button" />
+     <Folder Include="Assets/Scripts/GenerateField" />
      <Folder Include="Assets/Scripts/Enum" />
      <Folder Include="Assets/Scripts/Observer" />
      <Folder Include="Assets/Animation" />
+     <Folder Include="Assets/Scripts/GenerateField/Stone" />
      <Folder Include="Assets/Scripts/Command" />
      <Folder Include="Assets/Scripts/Observer/Event" />
+     <Folder Include="Assets/Scripts/GenerateField/Stone/Axises" />
      <Folder Include="Assets/Scripts/ChainResponsibility" />
      <Folder Include="Assets/Scripts" />
      <Folder Include="Assets/Graphics" />
