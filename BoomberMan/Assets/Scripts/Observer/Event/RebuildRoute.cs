@@ -1,10 +1,10 @@
-namespace Observer.Bomb.Event
+namespace Observer.Event
 {
-    public class RebuildRoute : EventListener
+    public class RebuildRoute : IEventListener
     {
-        public void update()
+        public void Update()
         {
-            Enemy.RebuildRoute();
+            BehaviorEnemy.RebuildRoute();
         }
     }
 }

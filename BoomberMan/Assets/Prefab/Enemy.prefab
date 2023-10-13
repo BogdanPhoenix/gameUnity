@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 736bad6891039464ebaf66e83fb488ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BomberMan: {fileID: 0}
+  BomberMan: {fileID: 5846543412990599749, guid: 89b9291d92512644eb3473b8d427fc7c, type: 3}
   DeathEffect: {fileID: 7613209679237754361, guid: 6f875a94a37d51e4eb9b82330f3a7b2a, type: 3}
   MoveSpeed: 1
   SolidLayer:
