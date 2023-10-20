@@ -2,7 +2,7 @@
 using Enum;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class BehaviorEnemy : MonoBehaviour
 {
     private PathFinder PathFinder;
     private bool IsMoving;
@@ -13,26 +13,22 @@ public class Enemy : MonoBehaviour
     public float MoveSpeed;
     public LayerMask SolidLayer;
 
-    public static readonly ISet<Enemy> Enemies = new HashSet<Enemy>();
+    private static readonly ISet<BehaviorEnemy> Enemies = new HashSet<BehaviorEnemy>();
 
-    public static void AddEnemy(Enemy enemy)
+    public static void AddEnemy(GameObject enemy)
     {
-        Enemies.Add(enemy);
+        Enemies.Add(enemy.GetComponent<BehaviorEnemy>());
     }
 
-    private static void RemoveEnemy(Enemy enemy)
+    private static void RemoveEnemy(BehaviorEnemy behaviorEnemy)
     {
-        Enemies.Remove(enemy);
+        Enemies.Remove(behaviorEnemy);
+        
+        if (Enemies.Count != 0) return;
+        
+        Debug.Log("You win");
+        FindObjectOfType<GenerateMap>().NextLevel();
     }
-    
-    // public static void RebuildRoute()
-    // {
-    //     var enemies = FindObjectsOfType<Enemy>();
-    //     foreach (var item in enemies)
-    //     {
-    //         item.ReCalculateNextStep();
-    //     }
-    // }
     
     public static void RebuildRoute()
     {
@@ -45,6 +41,7 @@ public class Enemy : MonoBehaviour
     private void Start()
     {
         PathFinder = new PathFinder(gameObject, SolidLayer);
+        
         ReCalculateNextStep();
         IsMoving = true;
         InvokeRepeating(nameof(Update), 1f, 1f);

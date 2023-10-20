@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Map.PowerUp;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 public class Fire : MonoBehaviour
@@ -15,5 +16,8 @@ public class Fire : MonoBehaviour
         if (!other.gameObject.CompareTag("Brick")) return;
         Destroy(other.gameObject);
         Instantiate(brickDeathEffect, transform.position, transform.rotation);
+        
+        GeneratePowerUpBlocks.AddPowerUpToMap(other.gameObject.transform.position);
+        GenerateMap.DetonateBrick(other.gameObject.transform.position);
     }
 }

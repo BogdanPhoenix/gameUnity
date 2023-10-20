@@ -1,10 +1,13 @@
 ﻿using Enum;
 using UnityEngine;
 
-public class PowerUp : MonoBehaviour
+public class PowerUpElement : MonoBehaviour
 {
     public PowerUpType type;
     public float invincibilityTime;
+    
+    [Range(1, 100)]
+    public int Weight = 50;
 
     private void Update()
     {
