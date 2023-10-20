@@ -1,8 +1,7 @@
-namespace Observer
+namespace Observer.Bomb
 {
     public enum TypeActive
     {
-        EnemyRebuildRoute,
-        UpdateMap
+        ENEMY_REBUILD_ROUTE
     }
 }

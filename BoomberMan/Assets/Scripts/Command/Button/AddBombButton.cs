@@ -1,5 +1,5 @@
-using Observer;
-using Observer.Event;
+using Observer.Bomb;
+using Observer.Bomb.Event;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -18,8 +18,8 @@ namespace ChainResponsibility.Command.Button
             BombPrefab = bombPrefab;
             BomberMan = Object.FindObjectOfType<BomberMan>();
 
-            Manager = new EventManager(TypeActive.EnemyRebuildRoute);
-            Manager.Subscribe(TypeActive.EnemyRebuildRoute, new RebuildRoute());
+            Manager = new EventManager(TypeActive.ENEMY_REBUILD_ROUTE);
+            Manager.Subscribe(TypeActive.ENEMY_REBUILD_ROUTE, new RebuildRoute());
         }
 
         public override void Execute()
@@ -32,7 +32,7 @@ namespace ChainResponsibility.Command.Button
             Object.Instantiate(BombPrefab, new Vector2(Mathf.Round(BomberMan.transform.position.x), 
                 Mathf.Round(BomberMan.transform.position.y)), BomberMan.transform.rotation);
          
-            Manager.Notify(TypeActive.EnemyRebuildRoute);
+            Manager.Notify(TypeActive.ENEMY_REBUILD_ROUTE);
         }
 
         private bool Check()

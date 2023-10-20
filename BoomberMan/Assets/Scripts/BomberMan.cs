@@ -138,7 +138,7 @@ public class BomberMan : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.gameObject.CompareTag("PowerUp")) return;
-        switch(other.GetComponent<PowerUpElement>().type)
+        switch(other.GetComponent<PowerUp>().type)
         {
             case PowerUpType.EXTRA_BOMB:
                 AddExtraBomb();

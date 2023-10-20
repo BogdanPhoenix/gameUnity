@@ -123,7 +123,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &489033230
+--- !u!1 &402746853
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,21 +131,21 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 489033231}
+  - component: {fileID: 402746854}
   m_Layer: 0
-  m_Name: PowerUps
+  m_Name: Enemies
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &489033231
+--- !u!4 &402746854
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 489033230}
+  m_GameObject: {fileID: 402746853}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -353,7 +353,7 @@ Transform:
   m_Children:
   - {fileID: 853587631}
   - {fileID: 1059724369}
-  - {fileID: 489033231}
+  - {fileID: 402746854}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1172232582
@@ -371,16 +371,7 @@ MonoBehaviour:
   mapSize: {x: 17, y: 17}
   stonePrefab: {fileID: 1846404116095762221, guid: 2f2f8a222a906a3468ac50f87c96ca0b, type: 3}
   brickPrefab: {fileID: 1803475645937559374, guid: 4f6895843f43d8641a6def996ffc6e1d, type: 3}
-  enemyPrefab: {fileID: 3970175068180523225, guid: af395061202560f479d4487679af0b6b, type: 3}
   bomberMan: {fileID: 5846543412990599749, guid: 89b9291d92512644eb3473b8d427fc7c, type: 3}
-  powerUps:
-  - {fileID: 155097666922313396, guid: d437389840dfeae44870f4948fbab204, type: 3}
-  - {fileID: 7487979393905831671, guid: 55c810aab9d4ec545b72f0cdba634aa7, type: 3}
-  - {fileID: 8745309638414769121, guid: 2730d259a96ebce4d964b968c71fafa3, type: 3}
-  - {fileID: 427339023737344661, guid: 5dd32c2121178c245abd4b4cbde38e76, type: 3}
-  - {fileID: 4842053025094091443, guid: bdc0c2fe9a72b0e4bad953216ebdabf1, type: 3}
-  - {fileID: 1487139935518869560, guid: ea0b1a7dfd184cd47b27530fa7222118, type: 3}
-  - {fileID: 5783763671606444813, guid: 4483ab5b3f17d9c4c9c2e657fa5e73f6, type: 3}
 --- !u!850595691 &1685739415
 LightingSettings:
   m_ObjectHideFlags: 0

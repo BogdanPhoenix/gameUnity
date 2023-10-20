@@ -7,12 +7,11 @@ public class CameraController : MonoBehaviour
     private Camera Camera;
     private BomberMan Bomberman;
 
-    public void Start()
+    private void Start()
     {
         Bomberman = FindObjectOfType<BomberMan>();
         Camera = GetComponent<Camera>();
         var listOfStone = GameObject.FindGameObjectsWithTag("Stone").ToArray();
-        
         field = new Field()
         {
             MinX = listOfStone.Min(x => x.transform.position.x) - 0.5f,

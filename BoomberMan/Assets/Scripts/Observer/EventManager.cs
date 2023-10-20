@@ -1,26 +1,26 @@
 using System.Collections.Generic;
 
-namespace Observer
+namespace Observer.Bomb
 {
     public class EventManager
     {
-        private readonly Dictionary<TypeActive, IList<IEventListener>> Listeners = new();
+        private readonly Dictionary<TypeActive, List<EventListener>> Listeners = new();
         
         public EventManager(params TypeActive[] types)
         {
             foreach (var type in types)
             {
-                Listeners.Add(type, new List<IEventListener>());
+                Listeners.Add(type, new List<EventListener>());
             }
         }
 
-        public void Subscribe(TypeActive type, IEventListener listener)
+        public void Subscribe(TypeActive type, EventListener listener)
         {
             var events = GetEventListeners(type);
             events.Add(listener);
         }
 
-        public void Unsubscribe(TypeActive type, IEventListener listener)
+        public void Unsubscribe(TypeActive type, EventListener listener)
         {
             var events = GetEventListeners(type);
             events.Remove(listener);
@@ -31,11 +31,11 @@ namespace Observer
             var events = GetEventListeners(type);
             foreach (var listener in events)
             {
-                listener.Update();
+                listener.update();
             }
         }
 
-        private IList<IEventListener> GetEventListeners(TypeActive type)
+        private List<EventListener> GetEventListeners(TypeActive type)
         {
             return Listeners[type];
         }

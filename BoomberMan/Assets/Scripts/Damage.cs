@@ -13,7 +13,7 @@ public class Damage : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Enemy"))
         {
-            other.GetComponent<BehaviorEnemy>().Damage(source);
+            other.GetComponent<Enemy>().Damage(source);
         }
     }
 }
