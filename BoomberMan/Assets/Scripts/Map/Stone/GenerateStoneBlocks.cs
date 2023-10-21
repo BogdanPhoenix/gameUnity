@@ -32,9 +32,10 @@ namespace Map.Stone
             {
                 for (var j = 2; j < MapSize.y; j += 2)
                 {
-                    if(Field[i,j] != null) continue;
+                    if(Field[i,j] != TypeObject.None) continue;
 
-                    Field[i, j] = Object.Instantiate(StoneObject, new Vector2(StartPosition.x + i, StartPosition.y - j), StoneObject.transform.rotation);
+                    Object.Instantiate(StoneObject, new Vector2(StartPosition.x + i, StartPosition.y - j), StoneObject.transform.rotation);
+                    Field[i, j] = TypeObject.Stone;
                 }
             }
         }

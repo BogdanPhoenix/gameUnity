@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BomberMan;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -12,6 +13,19 @@ public class Bomb : MonoBehaviour
         public static readonly Vector2 Down = new(0, -1);
     }
     
+    private float Counter;
+    private int FireLength;
+    // private BomberManPlayer Bomberman;
+    private BomberManPower BomberManPower;
+    
+    private List<Vector2> CellsToBlowR;
+    private List<Vector2> CellsToBlowL;
+    private List<Vector2> CellsToBlowU;
+    private List<Vector2> CellsToBlowD;
+    
+    private bool Calculated;
+    private bool CanTick;
+    
     [System.Serializable]
     public struct FireObjects
     {
@@ -24,28 +38,16 @@ public class Bomb : MonoBehaviour
         [FormerlySerializedAs("Bottom")] public GameObject bottom;
     }
     
-    private float Counter;
-    private int FireLength;
-    private BomberMan Bomberman;
-    
-    private List<Vector2> CellsToBlowR;
-    private List<Vector2> CellsToBlowL;
-    private List<Vector2> CellsToBlowU;
-    private List<Vector2> CellsToBlowD;
-    
-    private bool Calculated;
-    private bool CanTick;
-    
     [FormerlySerializedAs("FireObjects")] public FireObjects fireObject;
     [FormerlySerializedAs("Delay")] public float delay;
-
     [FormerlySerializedAs("StoneLayer")] public LayerMask stoneLayer;
     [FormerlySerializedAs("BlowableLayer")] public LayerMask blowableLayer;
     
     private void Start()
     {
-        Bomberman = FindObjectOfType<BomberMan>();
-        CanTick = !Bomberman.CheckDetonator();
+        // Bomberman = FindObjectOfType<BomberManPlayer>();
+        BomberManPower = BomberManPower.GetInstance();
+        CanTick = !BomberManPower.HasDetonator;
         Calculated = false;
         Counter = delay;
         
@@ -110,8 +112,8 @@ public class Bomb : MonoBehaviour
     private void CalculateFireDirections()
     {
         if (Calculated) return;
-        
-        FireLength = Bomberman.GetFireLength();
+
+        FireLength = BomberManPower.FireLength;
         
         CalculateDirection(CellsToBlowL, SidesFireDirection.Left);
         CalculateDirection(CellsToBlowR, SidesFireDirection.Right);

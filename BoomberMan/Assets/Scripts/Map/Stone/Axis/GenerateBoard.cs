@@ -6,9 +6,9 @@ namespace Map.Stone.Axis
     {
         protected const int FirstLine = 0;
         protected static GameObject Stone;
-        protected readonly GameObject[,] Field;
+        protected readonly TypeObject[,] Field;
 
-        protected GenerateBoard(GameObject[,] field)
+        protected GenerateBoard(TypeObject[,] field)
         {
             Field = field;
         }

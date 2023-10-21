@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1064e3ef10af56a8fb54c82a117e394a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clip: {fileID: 8300000, guid: 90ef501ce1425959fb0c6d81fe549a45, type: 3}
   type: 3
   invincibilityTime: 2
   Weight: 5

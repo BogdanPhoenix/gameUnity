@@ -4,7 +4,7 @@ namespace Map.Stone.Axis
 {
     public class GenerateBoardAxisX : GenerateBoard
     {
-        public GenerateBoardAxisX(GameObject[,] field) : base(field) {}
+        public GenerateBoardAxisX(TypeObject[,] field) : base(field) {}
         
         public override void GenerateAxis(Vector2Int mapSize, Vector2 startPosition)
         {
@@ -17,7 +17,7 @@ namespace Map.Stone.Axis
 
         protected override bool CheckAddObject(int currentIndex, int indexLine)
         {
-            return Field[currentIndex, indexLine] == null;
+            return Field[currentIndex, indexLine] == TypeObject.None;
         }
 
         protected override Vector2 GetPositionObject(int currentIndex, Vector2 position)
@@ -27,7 +27,8 @@ namespace Map.Stone.Axis
         
         protected override void Instantiate(int currentIndex, int indexLine, Vector2 position)
         {
-            Field[currentIndex, indexLine] = Object.Instantiate(Stone, position, Stone.transform.rotation);
+            Object.Instantiate(Stone, position, Stone.transform.rotation);
+            Field[currentIndex, indexLine] = TypeObject.Stone;
         }
     }
 }

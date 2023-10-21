@@ -78,21 +78,6 @@ public class PathFinder
         
         return new List<Vector2Int>();
     }
-    
-    //     while(WaitingNodes.Count > 0)
-    //     {
-    //         var nodeToCheck = WaitingNodes.FirstOrDefault(x => x.F == WaitingNodes.Min(y => y.F));
-    //
-    //         if (nodeToCheck!.Position == targetPosition)
-    //         {
-    //             return CalculatePathFromNode(nodeToCheck).ToList();
-    //         }
-    //
-    //         if (!CheckWalkable(nodeToCheck) || CheckedNodes.Any(x => x.Position == nodeToCheck.Position)) continue;
-    //         
-    //         CheckedNodes.Add(nodeToCheck);
-    //         WaitingNodes.AddRange(GetNeighbourNodes(nodeToCheck));
-    //     }
 
     private IEnumerable<Vector2Int> CalculatePathFromNode(Node node)
     {

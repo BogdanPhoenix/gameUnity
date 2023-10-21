@@ -1,14 +1,21 @@
+using BomberMan;
+using ChainResponsibility.Command.Button;
 using UnityEngine;
 
-namespace ChainResponsibility.Command.Button
+namespace Command.Button
 {
     public class DetonatorBombButton : ButtonActiveCommand
     {
-        public DetonatorBombButton(KeyCode detonateButton) : base(detonateButton) {}
+        private readonly BomberManPower BomberManPower;
+
+        public DetonatorBombButton(KeyCode detonateButton) : base(detonateButton)
+        {
+            BomberManPower = BomberManPower.GetInstance();
+        }
 
         public override void Execute()
         {
-            if (!CheckKeyDown())
+            if (!CheckKeyDown() || !BomberManPower.HasDetonator)
             {
                 return;
             }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using BomberMan;
 using Map;
 using Map.Brick;
 using Map.Enemy;
@@ -9,11 +11,12 @@ using UnityEngine.Serialization;
 
 public class GenerateMap : MonoBehaviour
 {
-    private static Vector2 _startPosition;
+    private static Vector2 _startPositionGenerateMap;
+    private static Vector2 _startPositionBomberMan;
     private const int MaxLevel = 4;
     private static int Level = 0;
     
-    private static GameObject[,] Field;
+    private static TypeObject[,] Field;
     private GenerateObject StoneBlocks;
     private GenerateObject BrickBlock;
     private GenerateObject PowerUpBlocks;
@@ -28,7 +31,8 @@ public class GenerateMap : MonoBehaviour
     
     public void Start()
     {
-        _startPosition = new Vector2(bomberMan.transform.position.x - 1, bomberMan.transform.position.y + 1);
+        _startPositionGenerateMap = new Vector2(bomberMan.transform.position.x - 1, bomberMan.transform.position.y + 1);
+        _startPositionBomberMan = new Vector2(bomberMan.transform.position.x, bomberMan.transform.position.y);
         
         StoneBlocks = new GenerateStoneBlocks(stonePrefab);
         BrickBlock = new GenerateBrickBlock(bomberMan, brickPrefab);
@@ -52,7 +56,7 @@ public class GenerateMap : MonoBehaviour
         
         Debug.Log("New Level");
         
-        FindObjectOfType<BomberMan>().transform.position = new Vector3(0, 0, bomberMan.transform.position.z);
+        FindObjectOfType<BomberManPlayer>().transform.position = new Vector3(_startPositionBomberMan.x, _startPositionBomberMan.y, bomberMan.transform.position.z);
         
         ++Level;
         Generate();
@@ -60,8 +64,24 @@ public class GenerateMap : MonoBehaviour
     
     private void Generate()
     {
-        Field = new GameObject[mapSize.x, mapSize.y];
+        Field = new TypeObject[mapSize.x, mapSize.y];
+        FillArray2d(Field, TypeObject.None);
+        
         CreateObjects(StoneBlocks, BrickBlock, PowerUpBlocks, Enemy);
+    }
+
+    private static void FillArray2d(TypeObject[,] field, TypeObject value)
+    {
+        var rows = field.GetLength(0);
+        var cols = field.GetLength(1);
+
+        for (var i = 0; i < rows; i++)
+        {
+            for (var j = 0; j < cols; j++)
+            {
+                field[i, j] = value;
+            }
+        }
     }
 
     private static void CreateObjects(params GenerateObject[] create)
@@ -75,15 +95,15 @@ public class GenerateMap : MonoBehaviour
     public static void DetonateBrick(Vector2 positionField)
     {
         var position = new Vector2Int(
-            (int)(positionField.x - _startPosition.x), 
-            (int)(positionField.y - _startPosition.y) * -1);
+            (int)(positionField.x - _startPositionGenerateMap.x), 
+            (int)(positionField.y - _startPositionGenerateMap.y) * -1);
         
-        Field[position.x, position.y] = null;
+        Field[position.x, position.y] = TypeObject.None;
     }
 
     public static Vector2 GetStartPosition()
     {
-        return _startPosition;
+        return _startPositionGenerateMap;
     }
 
     public static int GetLevel()

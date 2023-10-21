@@ -28,14 +28,15 @@ namespace Map.Brick
                     if(!CheckSpacePresence(i,j) || !CheckPositionAdd(positionBrick)) 
                         continue;
                     
-                    Field[i, j] = Object.Instantiate(BrickObject, positionBrick, BrickObject.transform.rotation);
+                    Object.Instantiate(BrickObject, positionBrick, BrickObject.transform.rotation);
+                    Field[i, j] = TypeObject.Brick;
                 }
             }
         }
 
         private bool CheckSpacePresence(int i, int j)
         {
-            return Field[i, j] == null && Random.value < SpawnThreshold;
+            return Field[i, j] == TypeObject.None && Random.value < SpawnThreshold;
         }
 
         private bool CheckPositionAdd(Vector2 position)

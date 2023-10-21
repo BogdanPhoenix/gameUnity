@@ -28,7 +28,7 @@ namespace Map.PowerUp
             }
         }
         
-        public override void CreateObjects(GameObject[,] field)
+        public override void CreateObjects(TypeObject[,] field)
         {
             _elementsToMap = new Dictionary<Vector2, GameObject>();
             base.CreateObjects(field);
@@ -61,7 +61,7 @@ namespace Map.PowerUp
         
         private bool CheckSpacePresence(Vector2Int positionToArray)
         {
-            return Field[positionToArray.x, positionToArray.y] != null && Field[positionToArray.x, positionToArray.y].name.Equals(BrickName);
+            return Field[positionToArray.x, positionToArray.y] != TypeObject.None && Field[positionToArray.x, positionToArray.y] == TypeObject.Brick;
         }
         
         private bool CheckPositionAdd(Vector2 position)

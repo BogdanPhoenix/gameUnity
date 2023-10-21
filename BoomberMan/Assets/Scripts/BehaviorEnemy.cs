@@ -1,46 +1,25 @@
 ﻿using System.Collections.Generic;
+using Damage;
 using Enum;
+using Map.Enemy;
 using UnityEngine;
 
-public class BehaviorEnemy : MonoBehaviour
+public class BehaviorEnemy : MonoBehaviour, IDamage
 {
     private PathFinder PathFinder;
     private bool IsMoving;
     private Vector2Int NextStep;
+    private EnemyOnMap EnemyOnMap;
 
     public GameObject BomberMan;
     public GameObject DeathEffect;
     public float MoveSpeed;
     public LayerMask SolidLayer;
-
-    private static readonly ISet<BehaviorEnemy> Enemies = new HashSet<BehaviorEnemy>();
-
-    public static void AddEnemy(GameObject enemy)
-    {
-        Enemies.Add(enemy.GetComponent<BehaviorEnemy>());
-    }
-
-    private static void RemoveEnemy(BehaviorEnemy behaviorEnemy)
-    {
-        Enemies.Remove(behaviorEnemy);
-        
-        if (Enemies.Count != 0) return;
-        
-        Debug.Log("You win");
-        FindObjectOfType<GenerateMap>().NextLevel();
-    }
-    
-    public static void RebuildRoute()
-    {
-        foreach (var item in Enemies)
-        {
-            item.ReCalculateNextStep();
-        }
-    }
     
     private void Start()
     {
         PathFinder = new PathFinder(gameObject, SolidLayer);
+        EnemyOnMap = EnemyOnMap.GetInstance();
         
         ReCalculateNextStep();
         IsMoving = true;
@@ -64,7 +43,7 @@ public class BehaviorEnemy : MonoBehaviour
         }
     }
     
-    private void ReCalculateNextStep()
+    public void ReCalculateNextStep()
     {
         AssignNewStep(BomberMan.transform.position);
 
@@ -90,13 +69,13 @@ public class BehaviorEnemy : MonoBehaviour
             IsMoving = false;
         }
     }
-
+    
     public void Damage(TypeDamage source)
     {
-        if (source == TypeDamage.Enemy) return;
+        if (source != TypeDamage.Fire) return;
         
         Instantiate(DeathEffect, transform.position, transform.rotation);
-        RemoveEnemy(this);
+        EnemyOnMap.RemoveEnemy(this);
         Destroy (gameObject);
     }
 }

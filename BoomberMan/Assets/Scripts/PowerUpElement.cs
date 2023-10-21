@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class PowerUpElement : MonoBehaviour
 {
+    private static readonly float volume = 1f;
+    
+    public AudioClip clip;
     public PowerUpType type;
     public float invincibilityTime;
     
@@ -23,5 +26,10 @@ public class PowerUpElement : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void ActivateSound()
+    {
+        AudioSource.PlayClipAtPoint(clip, transform.position, volume);
     }
 }

@@ -1,15 +1,16 @@
 ﻿using System.Linq;
+using BomberMan;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
     private Field field;
     private Camera Camera;
-    private BomberMan Bomberman;
+    private BomberManPlayer Bomberman;
 
     public void Start()
     {
-        Bomberman = FindObjectOfType<BomberMan>();
+        Bomberman = FindObjectOfType<BomberManPlayer>();
         Camera = GetComponent<Camera>();
         var listOfStone = GameObject.FindGameObjectsWithTag("Stone").ToArray();
         

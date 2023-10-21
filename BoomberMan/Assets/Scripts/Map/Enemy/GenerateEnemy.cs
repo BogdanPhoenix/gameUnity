@@ -8,11 +8,13 @@ namespace Map.Enemy
         private const int PowerMultiplier = 1;
         private readonly GameObject EnemyObject;
         private readonly GameObject BomberMan;
+        private EnemyOnMap EnemyOnMap;
         
         public GenerateEnemy(GameObject enemyObject, GameObject bomberMan)
         {
             EnemyObject = enemyObject;
             BomberMan = bomberMan;
+            EnemyOnMap = EnemyOnMap.GetInstance();
         }
 
         protected override void Generate()
@@ -33,7 +35,7 @@ namespace Map.Enemy
                 Debug.Log("Position in Array="+positionToArray+"\nPosition in Map="+positionToMap);
                 
                 var obj = Object.Instantiate(EnemyObject, positionToMap, EnemyObject.transform.rotation);
-                BehaviorEnemy.AddEnemy(obj);
+                EnemyOnMap.AddEnemy(obj);
                 
                 ++countPower;
             }
@@ -41,7 +43,7 @@ namespace Map.Enemy
         
         private bool CheckSpacePresence(Vector2Int positionToArray)
         {
-            return Field[positionToArray.x, positionToArray.y] == null;
+            return Field[positionToArray.x, positionToArray.y] == TypeObject.None;
         }
         
         private bool CheckPositionAdd(Vector2 position)
