@@ -1,16 +1,19 @@
+using Enum;
 using UnityEngine;
 
 namespace Map.Stone.Axis
 {
     public class GenerateBoardAxisX : GenerateBoard
     {
-        public GenerateBoardAxisX(TypeObject[,] field) : base(field) {}
-        
+        public GenerateBoardAxisX(TypeObject[,] field) : base(field)
+        {
+        }
+
         public override void GenerateAxis(Vector2Int mapSize, Vector2 startPosition)
         {
             var lastLine = mapSize.y - 1;
             var endPosition = GetEndPoint(mapSize, startPosition);
-            
+
             GenerateAxisLine(mapSize.x, FirstLine, startPosition);
             GenerateAxisLine(mapSize.x, lastLine, new Vector2(startPosition.x, endPosition.y));
         }
@@ -24,7 +27,7 @@ namespace Map.Stone.Axis
         {
             return new Vector2(position.x + currentIndex, position.y);
         }
-        
+
         protected override void Instantiate(int currentIndex, int indexLine, Vector2 position)
         {
             Object.Instantiate(Stone, position, Stone.transform.rotation);

@@ -4,12 +4,12 @@ namespace ChainResponsibility.Direction
 {
     public abstract class ChooseDirection
     {
-        private ChooseDirection Next;
         private const DirectionPerson DefaultValue = DirectionPerson.Stop;
+        private ChooseDirection Next;
 
         public static ChooseDirection Link(ChooseDirection first, params ChooseDirection[] chain)
         {
-            ChooseDirection head = first;
+            var head = first;
 
             foreach (var nextInChain in chain)
             {

@@ -1,3 +1,4 @@
+using Enum;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,22 +8,15 @@ namespace SceneControl
     {
         public bool pauseGame;
         public GameObject pauseGameMenu;
-    
+
         private void Update()
         {
-            if (!Input.GetKeyDown(KeyCode.Escape))
-            {
-                return;
-            }
+            if (!Input.GetKeyDown(KeyCode.Escape)) return;
 
             if (pauseGame)
-            {
                 Resume();
-            }
             else
-            {
                 Pause();
-            }
         }
 
         public void Resume()

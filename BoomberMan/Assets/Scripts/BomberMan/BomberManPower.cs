@@ -1,4 +1,5 @@
 using Enum;
+using Map.PowerUp;
 
 namespace BomberMan
 {
@@ -6,9 +7,21 @@ namespace BomberMan
     {
         private static BomberManPower _bomberManPower;
         private readonly float SpeedBoostPower;
+        private readonly float SpeedIncrease;
 
-        private float MoveSpeed = 0.5f;
+        private BomberManPower()
+        {
+            MoveSpeed = 2f;
+            SpeedBoostPower = 0.5f;
+            BombsAllowed = 1;
+            FireLength = 1;
+            NoClipWalls = false;
+            NoClipBombs = false;
+            NoClipFire = false;
+            HasDetonator = false;
+        }
 
+        public float MoveSpeed { get; private set; }
         public int BombsAllowed { get; private set; }
 
         public int FireLength { get; private set; }
@@ -21,17 +34,6 @@ namespace BomberMan
 
         public bool HasDetonator { get; private set; }
 
-        private BomberManPower()
-        {
-            SpeedBoostPower = 0.5f;
-            BombsAllowed = 1;
-            FireLength = 1;
-            NoClipWalls = false;
-            NoClipBombs = false;
-            NoClipFire = false;
-            HasDetonator = false;
-        }
-
         public static BomberManPower GetInstance()
         {
             return _bomberManPower ??= new BomberManPower();
@@ -40,33 +42,33 @@ namespace BomberMan
         public void UpdatePower(PowerUpElement power)
         {
             power.ActivateSound();
-        
-            switch(power.type)
+
+            switch (power.type)
             {
-                case PowerUpType.EXTRA_BOMB:
+                case PowerUpType.ExtraBomb:
                     AddExtraBomb();
                     break;
-                case PowerUpType.FIRE:
+                case PowerUpType.Fire:
                     IncreasePowerBomb();
                     break;
-                case PowerUpType.SPEED:
+                case PowerUpType.Speed:
                     IncreaseSpeed();
                     break;
-                case PowerUpType.NOCLIP_WALL:
+                case PowerUpType.NoClipWall:
                     ActiveNoClipWalls();
                     break;
-                case PowerUpType.NOCLIP_FIRE:
+                case PowerUpType.NoClipFire:
                     ActiveNoClipFire();
                     break;
-                case PowerUpType.NOCLIP_BOMB:
+                case PowerUpType.NoClipBomb:
                     ActiveNoClipBombs();
                     break;
-                case PowerUpType.DETONATOR:
+                case PowerUpType.Detonator:
                     AddDetonator();
                     break;
             }
         }
-        
+
         private void AddDetonator()
         {
             HasDetonator = true;

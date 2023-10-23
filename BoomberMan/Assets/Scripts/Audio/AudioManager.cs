@@ -1,44 +1,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour
+namespace Audio
 {
-    private int currentTrackIndex;
-    private AudioSource AudioSource;
-    
-    public List<AudioClip> Tracks;
-
-    [Range(0, 1)]
-    public float maxVolume;
-
-    private void Start()
+    public class AudioManager : MonoBehaviour
     {
-        currentTrackIndex = 0;
-        AudioSource = GetComponent<AudioSource>();
-        FirstSettingTracks();
-        PlayNextTrack();
-        InvokeRepeating(nameof(Update), 1f, 1f);
-    }
+        public List<AudioClip> Tracks;
 
-    private void FirstSettingTracks()
-    {
-        foreach (var track in Tracks)
+        [Range(0, 1)] public float maxVolume;
+
+        private AudioSource AudioSource;
+        private int currentTrackIndex;
+
+        private void Start()
         {
-            AudioSource.Stop();
-            AudioSource.volume = maxVolume;
+            currentTrackIndex = 0;
+            AudioSource = GetComponent<AudioSource>();
+            FirstSettingTracks();
+            PlayNextTrack();
+            InvokeRepeating(nameof(Update), 1f, 1f);
         }
-    }
 
-    private void Update()
-    {
-        if (AudioSource.isPlaying) return;
-        
-        PlayNextTrack();
-    }
+        private void Update()
+        {
+            if (AudioSource.isPlaying) return;
 
-    private void PlayNextTrack()
-    {
-        currentTrackIndex = Random.Range(0, Tracks.Count);
-        AudioSource.PlayOneShot(Tracks[currentTrackIndex]);
+            PlayNextTrack();
+        }
+
+        private void FirstSettingTracks()
+        {
+            foreach (var track in Tracks)
+            {
+                AudioSource.Stop();
+                AudioSource.volume = maxVolume;
+            }
+        }
+
+        private void PlayNextTrack()
+        {
+            currentTrackIndex = Random.Range(0, Tracks.Count);
+            AudioSource.PlayOneShot(Tracks[currentTrackIndex]);
+        }
     }
 }

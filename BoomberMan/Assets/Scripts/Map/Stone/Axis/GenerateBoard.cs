@@ -1,3 +1,4 @@
+using Enum;
 using UnityEngine;
 
 namespace Map.Stone.Axis
@@ -17,19 +18,19 @@ namespace Map.Stone.Axis
         {
             Stone = stone;
         }
-        
+
         protected void GenerateAxisLine(int end, int indexLine, Vector2 positionStart)
         {
             for (var i = 0; i < end; ++i)
             {
-                if(!CheckAddObject(i, indexLine)) continue;
+                if (!CheckAddObject(i, indexLine)) continue;
 
                 var position = GetPositionObject(i, positionStart);
                 Instantiate(i, indexLine, position);
             }
         }
 
-        protected Vector2 GetEndPoint(Vector2Int mapSize, Vector2 startPosition)
+        protected static Vector2 GetEndPoint(Vector2Int mapSize, Vector2 startPosition)
         {
             return new Vector2(startPosition.x + (mapSize.x - 1), startPosition.y - (mapSize.y - 1));
         }

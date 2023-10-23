@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ChainResponsibility.Command.Button
+namespace Command.Button
 {
     public abstract class ButtonActiveCommand
     {
@@ -15,7 +15,7 @@ namespace ChainResponsibility.Command.Button
         {
             return Input.GetKeyDown(ChooseButton);
         }
-        
+
         public abstract void Execute();
     }
 }

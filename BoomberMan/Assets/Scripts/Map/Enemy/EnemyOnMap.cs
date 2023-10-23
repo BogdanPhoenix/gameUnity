@@ -1,43 +1,21 @@
-using System.Collections.Generic;
-using UnityEngine;
+using Map.ActionsOnObjects;
 
 namespace Map.Enemy
 {
-    public class EnemyOnMap
+    public class EnemyOnMap : ObjectOnMap<EnemyObject>
     {
-        private static EnemyOnMap _enemyOnMap;
-        private readonly ISet<BehaviorEnemy> Enemies;
+        private static ObjectOnMap<EnemyObject> _emptyOnMap;
 
-        private EnemyOnMap()
-        {
-            Enemies = new HashSet<BehaviorEnemy>();
-        }
+        private EnemyOnMap() {}
 
-        public static EnemyOnMap GetInstance()
+        public static ObjectOnMap<EnemyObject> GetInstance()
         {
-            return _enemyOnMap ??= new EnemyOnMap();
+            return _emptyOnMap ??= new EnemyOnMap();
         }
         
-        public void AddEnemy(GameObject enemy)
+        public override void Active()
         {
-            Enemies.Add(enemy.GetComponent<BehaviorEnemy>());
-        }
-
-        public void RemoveEnemy(BehaviorEnemy behaviorEnemy)
-        {
-            Enemies.Remove(behaviorEnemy);
-        
-            if (Enemies.Count != 0) return;
-        
-            // FindObjectOfType<GenerateMap>().NextLevel();
-        }
-    
-        public void RebuildRoute()
-        {
-            foreach (var item in Enemies)
-            {
-                item.ReCalculateNextStep();
-            }
+            foreach (var item in Object) item.ReCalculateNextStep();
         }
     }
 }
