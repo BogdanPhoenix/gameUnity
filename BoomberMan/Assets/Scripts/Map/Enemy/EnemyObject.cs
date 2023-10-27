@@ -55,6 +55,8 @@ namespace Map.Enemy
 
         public void ReCalculateNextStep()
         {
+            if(BomberMan == null) return;
+            
             AssignNewStep(BomberMan.transform.position);
 
             if (!NextStep.Equals(Vector2Int.zero)) return;

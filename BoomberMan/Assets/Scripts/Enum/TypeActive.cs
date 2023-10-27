@@ -3,6 +3,10 @@ namespace Enum
     public enum TypeActive
     {
         EnemyRebuildRoute,
-        UpdateMap
+        UpdateMap,
+        GenerateObjects,
+        GenerateMap,
+        Victory,
+        GameOver
     }
 }

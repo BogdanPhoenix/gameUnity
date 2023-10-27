@@ -1,4 +1,5 @@
 using Enum;
+using Map.Generate;
 using Map.Stone.Axis;
 using UnityEngine;
 
@@ -6,13 +7,11 @@ namespace Map.Stone
 {
     public class GenerateStoneBlocks : GenerateObject
     {
-        private readonly Vector2 StartPosition;
         private readonly GameObject StoneObject;
 
         public GenerateStoneBlocks(GameObject stoneObject)
         {
             StoneObject = stoneObject;
-            StartPosition = GenerateMap.GetStartPosition();
             GenerateBoard.SetStoneObject(stoneObject);
         }
 
@@ -21,8 +20,8 @@ namespace Map.Stone
             var axisX = new GenerateBoardAxisX(Field);
             var axisY = new GenerateBoardAxisY(Field);
 
-            axisX.GenerateAxis(MapSize, StartPosition);
-            axisY.GenerateAxis(MapSize, StartPosition);
+            axisX.GenerateAxis(MapSize, StartPositionGenerateMap);
+            axisY.GenerateAxis(MapSize, StartPositionGenerateMap);
 
             GenerateInside();
         }
@@ -34,7 +33,7 @@ namespace Map.Stone
             {
                 if (Field[i, j] != TypeObject.None) continue;
 
-                Object.Instantiate(StoneObject, new Vector2(StartPosition.x + i, StartPosition.y - j),
+                Object.Instantiate(StoneObject, new Vector2(StartPositionGenerateMap.x + i, StartPositionGenerateMap.y - j),
                     StoneObject.transform.rotation);
                 Field[i, j] = TypeObject.Stone;
             }

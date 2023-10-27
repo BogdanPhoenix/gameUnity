@@ -10,6 +10,9 @@ TagManager:
   - Fire
   - PowerUp
   - Enemy
+  - Field
+  - BackgroundMusic
+  - UI
   layers:
   - Default
   - TransparentFX

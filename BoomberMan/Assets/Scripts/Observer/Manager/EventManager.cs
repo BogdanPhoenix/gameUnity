@@ -12,6 +12,14 @@ namespace Observer.Manager
             foreach (var type in types) Listeners.Add(type, new List<T>());
         }
 
+        public void Subscribe(TypeActive type, params T[] listeners)
+        {
+            foreach (var element in listeners)
+            {
+                Subscribe(type, element);
+            }
+        }
+        
         public void Subscribe(TypeActive type, T listener)
         {
             var events = GetEventListeners(type);

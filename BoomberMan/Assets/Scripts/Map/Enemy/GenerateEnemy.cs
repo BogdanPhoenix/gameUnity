@@ -1,5 +1,6 @@
 using Enum;
 using Map.ActionsOnObjects;
+using Map.Generate;
 using UnityEngine;
 
 namespace Map.Enemy
@@ -20,20 +21,19 @@ namespace Map.Enemy
         protected override void Generate()
         {
             var countPower = 0;
+            var maxEnemyOnLevel = MapProperties.GetCurrentLevel() + PowerMultiplier;
 
-            while (countPower < GenerateMap.GetLevel() + PowerMultiplier)
+            while (countPower < maxEnemyOnLevel)
             {
                 var positionToArray = new Vector2Int(
                     Random.Range(0, MapSize.x),
                     Random.Range(0, MapSize.y));
 
-                var positionToMap = new Vector2(GenerateMap.GetStartPosition().x + positionToArray.x,
-                    GenerateMap.GetStartPosition().y - positionToArray.y);
+                var positionToMap = new Vector2(StartPositionGenerateMap.x + positionToArray.x,
+                    StartPositionGenerateMap.y - positionToArray.y);
 
                 if (!(CheckSpacePresence(positionToArray) && CheckPositionAdd(positionToMap)))
                     continue;
-
-                Debug.Log("Position in Array=" + positionToArray + "\nPosition in Map=" + positionToMap);
 
                 var obj = Object.Instantiate(EnemyObject, positionToMap, EnemyObject.transform.rotation);
                 EnemiesOnMap.Add(obj);
@@ -49,7 +49,7 @@ namespace Map.Enemy
 
         private bool CheckPositionAdd(Vector2 position)
         {
-            return Vector2.Distance(BomberMan.transform.position, position) > MaxDistance;
+            return Vector2.Distance(StartPositionBomberMan, position) > MaxDistance;
         }
     }
 }

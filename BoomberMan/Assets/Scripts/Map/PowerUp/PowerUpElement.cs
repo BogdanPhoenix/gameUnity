@@ -1,12 +1,11 @@
-﻿using Enum;
+﻿using Audio;
+using Enum;
 using UnityEngine;
 
 namespace Map.PowerUp
 {
     public class PowerUpElement : MonoBehaviour
     {
-        private static readonly float volume = 1f;
-
         public AudioClip clip;
         public PowerUpType type;
         public float invincibilityTime;
@@ -25,6 +24,7 @@ namespace Map.PowerUp
 
         public void ActivateSound()
         {
+            var volume = VolumeControl.CalculateMaxValue("SoundVolume");
             AudioSource.PlayClipAtPoint(clip, transform.position, volume);
         }
     }

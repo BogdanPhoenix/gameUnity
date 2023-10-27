@@ -1,3 +1,4 @@
+using System;
 using Enum;
 using Map.PowerUp;
 
@@ -6,20 +7,7 @@ namespace BomberMan
     public class BomberManPower
     {
         private static BomberManPower _bomberManPower;
-        private readonly float SpeedBoostPower;
-        private readonly float SpeedIncrease;
-
-        private BomberManPower()
-        {
-            MoveSpeed = 2f;
-            SpeedBoostPower = 0.5f;
-            BombsAllowed = 1;
-            FireLength = 1;
-            NoClipWalls = false;
-            NoClipBombs = false;
-            NoClipFire = false;
-            HasDetonator = false;
-        }
+        private float SpeedBoostPower;
 
         public float MoveSpeed { get; private set; }
         public int BombsAllowed { get; private set; }
@@ -34,9 +22,26 @@ namespace BomberMan
 
         public bool HasDetonator { get; private set; }
 
+        private BomberManPower()
+        {
+            ResetPower();
+        }
+        
         public static BomberManPower GetInstance()
         {
             return _bomberManPower ??= new BomberManPower();
+        }
+
+        public void ResetPower()
+        {
+            MoveSpeed = 2f;
+            SpeedBoostPower = 0.5f;
+            BombsAllowed = 1;
+            FireLength = 1;
+            NoClipWalls = false;
+            NoClipBombs = false;
+            NoClipFire = false;
+            HasDetonator = false;
         }
 
         public void UpdatePower(PowerUpElement power)
@@ -66,6 +71,10 @@ namespace BomberMan
                 case PowerUpType.Detonator:
                     AddDetonator();
                     break;
+                case PowerUpType.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

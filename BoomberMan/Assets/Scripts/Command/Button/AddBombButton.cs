@@ -2,7 +2,6 @@ using BomberMan;
 using Enum;
 using Map.ActionsOnObjects;
 using Map.Bomb;
-using Observer;
 using Observer.Event;
 using Observer.Event.Interface;
 using Observer.Manager;
@@ -14,7 +13,6 @@ namespace Command.Button
     public class AddBombButton : ButtonActiveCommand
     {
         private readonly BomberManPlayer BomberMan;
-        private readonly BomberManPower BomberManPower;
         private readonly GameObject BombPrefab;
         private readonly EventManager<IEventListenerButton> Manager;
         private readonly IActionAdd<BombObject> Bombs;
@@ -23,10 +21,9 @@ namespace Command.Button
         {
             BombPrefab = bombPrefab;
             BomberMan = Object.FindObjectOfType<BomberManPlayer>();
-            BomberManPower = BomberManPower.GetInstance();
             Bombs = BombOnMap.GetInstance();
 
-            Manager = new EventManagerButton(TypeActive.EnemyRebuildRoute);
+            Manager = new EventManagerSimple(TypeActive.EnemyRebuildRoute);
             Manager.Subscribe(TypeActive.EnemyRebuildRoute, new RebuildRoute());
         }
 
@@ -38,7 +35,7 @@ namespace Command.Button
                 Mathf.Round(BomberMan.transform.position.y)), BomberMan.transform.rotation);
             Bombs.Add(obj);
 
-            ((INotifyButton)Manager).Notify(TypeActive.EnemyRebuildRoute);
+            ((INotifySimple)Manager).Notify(TypeActive.EnemyRebuildRoute);
         }
 
         private bool Check()
@@ -46,7 +43,7 @@ namespace Command.Button
             var size = new Vector2(BomberMan.sensorSize, BomberMan.sensorSize);
 
             return CheckKeyDown() &&
-                   Bombs.GetCount() < BomberManPower.BombsAllowed &&
+                   Bombs.GetCount() < BomberMan.Power.BombsAllowed &&
                    !CheckLayer(size, BomberMan.bombLayer) &&
                    !CheckLayer(size, BomberMan.fireLayer) &&
                    !CheckLayer(size, BomberMan.brickLayer);

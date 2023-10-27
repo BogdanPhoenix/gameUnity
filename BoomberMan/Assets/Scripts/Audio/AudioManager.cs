@@ -7,14 +7,12 @@ namespace Audio
     {
         public List<AudioClip> Tracks;
 
-        [Range(0, 1)] public float maxVolume;
-
         private AudioSource AudioSource;
-        private int currentTrackIndex;
+        private int CurrentTrackIndex;
 
         private void Start()
         {
-            currentTrackIndex = 0;
+            CurrentTrackIndex = 0;
             AudioSource = GetComponent<AudioSource>();
             FirstSettingTracks();
             PlayNextTrack();
@@ -30,17 +28,13 @@ namespace Audio
 
         private void FirstSettingTracks()
         {
-            foreach (var track in Tracks)
-            {
-                AudioSource.Stop();
-                AudioSource.volume = maxVolume;
-            }
+            AudioSource.Stop();
         }
 
         private void PlayNextTrack()
         {
-            currentTrackIndex = Random.Range(0, Tracks.Count);
-            AudioSource.PlayOneShot(Tracks[currentTrackIndex]);
+            CurrentTrackIndex = Random.Range(0, Tracks.Count);
+            AudioSource.PlayOneShot(Tracks[CurrentTrackIndex]);
         }
     }
 }

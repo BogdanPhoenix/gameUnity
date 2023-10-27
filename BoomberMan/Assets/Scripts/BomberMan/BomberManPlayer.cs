@@ -3,7 +3,9 @@ using Command.Button;
 using Damage;
 using Enum;
 using Map.PowerUp;
-using UnityEditor;
+using Observer.Event.Interface;
+using Observer.Manager;
+using Observer.Manager.Interface;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -11,11 +13,14 @@ namespace BomberMan
 {
     public class BomberManPlayer : MonoBehaviour, IDamage
     {
+        private static readonly int DirectionAnimate = Animator.StringToHash("Direction");
+        private static readonly int MovingAnimate = Animator.StringToHash("Moving");
+        
         private ButtonActiveCommand AddBomb;
-        private BomberManPower BomberManPower;
         private ButtonActiveCommand Detonator;
         private ChooseDirection Direction;
         private DirectionPerson NextStep;
+        private EventManager<IEventListenerGameOver> EventManagerGameOver;
         
         [FormerlySerializedAs("Sensor")] public Transform sensor;
         [FormerlySerializedAs("SensorSize")] public float sensorSize = 0.7f;
@@ -28,6 +33,8 @@ namespace BomberMan
 
         [FormerlySerializedAs("Bomb")] public GameObject BombPrefab;
         [FormerlySerializedAs("DeathEffect")] public GameObject deathEffect;
+        
+        public BomberManPower Power { get; private set; }
 
         private void Start()
         {
@@ -35,7 +42,7 @@ namespace BomberMan
 
             Detonator = new DetonatorBombButton(KeyCode.X);
             AddBomb = new AddBombButton(KeyCode.Z, BombPrefab);
-            BomberManPower = BomberManPower.GetInstance();
+            Power = BomberManPower.GetInstance();
 
             Direction = ChooseDirection.Link(
                 new CheckDirection(KeyCode.LeftArrow, DirectionPerson.Left),
@@ -43,6 +50,9 @@ namespace BomberMan
                 new CheckDirection(KeyCode.RightArrow, DirectionPerson.Right),
                 new CheckDirection(KeyCode.DownArrow, DirectionPerson.Down)
             );
+
+            EventManagerGameOver = new EventManagerGameOver(TypeActive.GameOver);
+            EventManagerGameOver.Subscribe(TypeActive.GameOver, new GameOver());
         }
 
         private void Update()
@@ -57,13 +67,13 @@ namespace BomberMan
             if (!other.gameObject.CompareTag("PowerUp")) return;
 
             var power = other.GetComponent<PowerUpElement>();
-            BomberManPower.UpdatePower(power);
+            Power.UpdatePower(power);
             Destroy(other.gameObject);
         }
 
         public void Damage(TypeDamage source)
         {
-            if (source == TypeDamage.Enemy || (source == TypeDamage.Fire && !BomberManPower.NoClipFire)) Die();
+            if (source == TypeDamage.Enemy || (source == TypeDamage.Fire && !Power.NoClipFire)) Die();
         }
 
         private void HandleBombs()
@@ -76,24 +86,15 @@ namespace BomberMan
         {
             var canMove = HandleSensor();
             if (!canMove) return;
-
-            switch (NextStep)
+            
+            transform.position = NextStep switch
             {
-                case DirectionPerson.Down:
-                    VerticalMove(-BomberManPower.MoveSpeed);
-                    break;
-                case DirectionPerson.Up:
-                    VerticalMove(BomberManPower.MoveSpeed);
-                    break;
-                case DirectionPerson.Left:
-                    HorizontalMove(-BomberManPower.MoveSpeed);
-                    break;
-                case DirectionPerson.Right:
-                    HorizontalMove(BomberManPower.MoveSpeed);
-                    break;
-                case DirectionPerson.Stop:
-                    break;
-            }
+                DirectionPerson.Down => VerticalMove(-Power.MoveSpeed),
+                DirectionPerson.Up => VerticalMove(Power.MoveSpeed),
+                DirectionPerson.Left => HorizontalMove(-Power.MoveSpeed),
+                DirectionPerson.Right => HorizontalMove(Power.MoveSpeed),
+                _ => transform.position
+            };
         }
 
         private bool HandleSensor()
@@ -115,8 +116,8 @@ namespace BomberMan
             };
 
             return !CheckLayer(size, stoneLayer) &&
-                   (BomberManPower.NoClipWalls || !CheckLayer(size, brickLayer)) &&
-                   (insideBomb || BomberManPower.NoClipBombs || !CheckLayer(size, bombLayer));
+                   (Power.NoClipWalls || !CheckLayer(size, brickLayer)) &&
+                   (insideBomb || Power.NoClipBombs || !CheckLayer(size, bombLayer));
         }
 
         private bool CheckLayer(Vector2 size, LayerMask layer)
@@ -124,34 +125,31 @@ namespace BomberMan
             return Physics2D.OverlapBox(sensor.position, size, 0, layer);
         }
 
-        private void HorizontalMove(float speed)
+        private Vector2 HorizontalMove(float speed)
         {
-            transform.position = new Vector2(transform.position.x + speed * Time.deltaTime,
-                Mathf.Round(transform.position.y));
             GetComponent<SpriteRenderer>().flipX = speed > 0;
+            return new Vector2(transform.position.x + speed * Time.deltaTime,
+                Mathf.Round(transform.position.y));
         }
 
-        private void VerticalMove(float speed)
+        private Vector2 VerticalMove(float speed)
         {
-            transform.position = new Vector2(Mathf.Round(transform.position.x),
+            return new Vector2(Mathf.Round(transform.position.x),
                 transform.position.y + speed * Time.deltaTime);
         }
 
         private void Animate()
         {
             var animator = GetComponent<Animator>();
-            animator.SetInteger("Direction", (int)NextStep);
-            animator.SetBool("Moving", NextStep != DirectionPerson.Stop);
+            animator.SetInteger(DirectionAnimate, (int)NextStep);
+            animator.SetBool(MovingAnimate, NextStep != DirectionPerson.Stop);
         }
 
         private void Die()
         {
             Instantiate(deathEffect, transform.position, transform.rotation);
             Destroy(gameObject);
-#if UNITY_EDITOR
-            EditorApplication.isPlaying = false;
-#endif
-            Application.Quit();
+            ((INotifySimple)EventManagerGameOver).Notify(TypeActive.GameOver);
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Enum;
 using Map.ActionsOnObjects;
+using Map.Generate;
 using Observer.Event.Map;
 using UnityEngine;
 
@@ -10,10 +11,11 @@ namespace Map.PowerUp
     public class GeneratePowerUpBlocks : GenerateObject
     {
         private const int PowerMultiplier = 2;
+        private const float MinDistance = 1.5f;
 
         private readonly IList<GameObject> Elements;
         private readonly IList<PowerUpElement> PowerUpElements;
-
+        
         public GeneratePowerUpBlocks(IList<GameObject> elements)
         {
             Elements = elements;
@@ -24,7 +26,7 @@ namespace Map.PowerUp
 
         public override void CreateObjects(TypeObject[,] field)
         {
-            INexlLevel objectToMap = PowerUpOnMap.GetInstance();
+            INextLevel objectToMap = PowerUpOnMap.GetInstance();
             objectToMap.Reset();
             
             base.CreateObjects(field);
@@ -33,21 +35,19 @@ namespace Map.PowerUp
         protected override void Generate()
         {
             var countPower = 0;
+            var maxPowerUpOnLevel = MapProperties.GetCurrentLevel() * PowerMultiplier;
             IActionAddOnMap objectsToMap = PowerUpOnMap.GetInstance();
 
-            while (countPower < GenerateMap.GetLevel() * PowerMultiplier)
+            while (countPower < maxPowerUpOnLevel)
             {
                 var positionToArray = new Vector2Int(
                     Random.Range(0, MapSize.x),
                     Random.Range(0, MapSize.y));
 
-                var positionToMap = new Vector2(GenerateMap.GetStartPosition().x + positionToArray.x,
-                    GenerateMap.GetStartPosition().y - positionToArray.y);
+                var positionToMap = new Vector2(StartPositionGenerateMap.x + positionToArray.x, StartPositionGenerateMap.y - positionToArray.y);
 
                 if (!CheckSpacePresence(positionToArray) || !CheckPositionAdd(positionToMap))
                     continue;
-
-                Debug.Log(positionToMap);
 
                 var element = Elements[ChooseRandomElementIndex()];
                 objectsToMap.Add(positionToMap, element);
@@ -64,7 +64,7 @@ namespace Map.PowerUp
 
         private bool CheckPositionAdd(Vector2 position)
         {
-            return Vector2.Distance(BomberMan.transform.position, position) > 1.5f;
+            return Vector2.Distance(StartPositionBomberMan, position) > MinDistance;
         }
 
         private int ChooseRandomElementIndex()

@@ -6,8 +6,13 @@ namespace SceneControl
 {
     public class PauseMenu : MonoBehaviour
     {
-        public bool pauseGame;
+        private bool pauseGame;
         public GameObject pauseGameMenu;
+
+        private void Start()
+        {
+            pauseGame = false;
+        }
 
         private void Update()
         {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Observer.Event.Map
 {
-    public class PowerUpOnMap : IEventListenerMap, IActionAddOnMap, INexlLevel
+    public class PowerUpOnMap : IEventListenerMap, IActionAddOnMap, INextLevel
     {
         private static PowerUpOnMap _powerUpOnMap;
         private readonly IDictionary<Vector2, GameObject> ElementsToMap = new Dictionary<Vector2, GameObject>();
@@ -19,12 +19,10 @@ namespace Observer.Event.Map
         
         public void Update(Vector2 positionOnMap)
         {
-            Debug.Log("In update");
             foreach (var (key, powerUp) in ElementsToMap)
             {
                 if (!key.Equals(positionOnMap)) continue;
 
-                Debug.Log("PowerUp");
                 Object.Instantiate(powerUp, positionOnMap, powerUp.transform.rotation);
                 ElementsToMap.Remove(key);
                 break;

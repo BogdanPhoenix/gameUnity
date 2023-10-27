@@ -1,4 +1,5 @@
 using Enum;
+using Map.Generate;
 using UnityEngine;
 
 namespace Map.Brick
@@ -16,12 +17,11 @@ namespace Map.Brick
 
         protected override void Generate()
         {
-            var startPosition = GenerateMap.GetStartPosition();
 
             for (var i = 0; i < MapSize.x; ++i)
             for (var j = 0; j < MapSize.y; ++j)
             {
-                var positionBrick = new Vector2(startPosition.x + i, startPosition.y - j);
+                var positionBrick = new Vector2(StartPositionGenerateMap.x + i, StartPositionGenerateMap.y - j);
 
                 if (!CheckSpacePresence(i, j) || !CheckPositionAdd(positionBrick))
                     continue;
@@ -38,7 +38,7 @@ namespace Map.Brick
 
         private bool CheckPositionAdd(Vector2 position)
         {
-            return Vector2.Distance(BomberMan.transform.position, position) > MaxDistance;
+            return Vector2.Distance(StartPositionBomberMan, position) > MaxDistance;
         }
     }
 }

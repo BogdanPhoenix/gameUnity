@@ -5,7 +5,17 @@ namespace Map.ActionsOnObjects
 {
     public abstract class ObjectOnMap<T> : IActionAdd<T>, IActionRemove<T>, IActionActive<T>
     {
-        protected readonly ISet<T> Object = new HashSet<T>();
+        protected ISet<T> Object;
+
+        protected ObjectOnMap()
+        {
+            Reset();
+        }
+        
+        public void Reset()
+        {
+            Object = new HashSet<T>();
+        }
         
         public void Add(GameObject obj)
         {
@@ -17,7 +27,7 @@ namespace Map.ActionsOnObjects
             return Object.Count;
         }
 
-        public void Remove(T enemyObject)
+        public virtual void Remove(T enemyObject)
         {
             Object.Remove(enemyObject);
         }
